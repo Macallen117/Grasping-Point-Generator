@@ -34,10 +34,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 
 ### Prepocessing to mesh model: Region-Growing
 ![image](images/Pre1.png)
-<img src="https://gitlab.ipr.kit.edu/uvxgo/planning-grasps-for-assembly-task/-/tree/master/images/Pre1.png" alt="Pre1" style="zoom: 50%;" />
-
-<img src="\images\Pre2.png" alt="Pre2" style="zoom: 80%;" />
-
+![image](images/Pre2.png)
 **Procedure:**
 
 1. initiates a seed triangle and scans the surrounding triangles of the seed.  
@@ -64,19 +61,12 @@ Reduce computational time to find neighbouring triangles of the seed triangle.
 
 **Proposed Result:**
 
-
-
-<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\pre3.png" alt="pre3" style="zoom: 80%;" />
-
-<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\pre4.png" alt="pre4" style="zoom: 80%;" />
+![image](images/Pre3.png)
+![image](images/Pre4.png)
 
 ### Random Sampling on facets
-
-   <img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\sammple1.png" alt="sammple1" style="zoom:80%;"  />
-
-
-
-<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\sample2.jpg" alt="sample2" style="zoom:80%;" />
+![image](images/sammple1.png)
+![image](images/sample2.png)
 
 **Step 1 : Sampling on each facet.** 
 
