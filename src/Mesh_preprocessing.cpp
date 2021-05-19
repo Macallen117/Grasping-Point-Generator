@@ -127,35 +127,34 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
 
 	while (open_set.size() != 0)
 	{
-	  expand_id = *open_set.begin(); 
-	  selected_set.clear();
-	  difference_set.clear();
-	  surrounding_set.clear();
+		expand_id = *open_set.begin(); 
+		selected_set.clear();
+		difference_set.clear();
+		surrounding_set.clear();
 		
-    for(int i = 0; i < nIndex; i++)
-    {
-      for(int j = 0; j < 3; j++)
-      {
-        if((triangles[i].points[0] == triangles[expand_id].points[j])||(triangles[i].points[1] == triangles[expand_id].points[j])||(triangles[i].points[2] == triangles[expand_id].points[j]))  // todo: reduct computational time
+		for(int i = 0; i < nIndex; i++)
+		{
+			for(int j = 0; j < 3; j++)
+			{
+				if((triangles[i].points[0] == triangles[expand_id].points[j])||(triangles[i].points[1] == triangles[expand_id].points[j])||(triangles[i].points[2] == triangles[expand_id].points[j]))  // todo: reduct computational time
         {
-        	surrounding_set.insert(i);   //find neighbours based on three vertex of seed 
+					surrounding_set.insert(i);   //find neighbours based on three vertex of seed 
         }
-    	}        	
-    } 
+			}        	
+		} 
     surrounding_set.erase(expand_id);
                     
-    for(std::set<int>::iterator it = surrounding_set.begin(); it != surrounding_set.end(); it++)
-    {
-      if(CheckNormal(triangles[*it].normal,seed_triangle_normal))    selected_set.insert(*it); 
-    }
+		for(std::set<int>::iterator it = surrounding_set.begin(); it != surrounding_set.end(); it++)
+		{
+			if(CheckNormal(triangles[*it].normal,seed_triangle_normal))    selected_set.insert(*it); 
+		}
                        
-    neighbour_set.insert(selected_set.begin(),selected_set.end()); //all face id fulfills theta1                     
-    closed_set.insert(expand_id);        		
-    open_set.erase(expand_id);         		
-    set_difference( selected_set.begin(), selected_set.end(),closed_set.begin(), closed_set.end(),inserter( difference_set, difference_set.begin() ) );   //expand only once
-    open_set.insert(difference_set.begin(),difference_set.end()); 
-	}
-	
+		neighbour_set.insert(selected_set.begin(),selected_set.end()); //all face id fulfills theta1                     
+		closed_set.insert(expand_id);        		
+		open_set.erase(expand_id);         		
+		set_difference( selected_set.begin(), selected_set.end(),closed_set.begin(), closed_set.end(),inserter( difference_set, difference_set.begin() ) );   //expand only once
+		open_set.insert(difference_set.begin(),difference_set.end()); 
+	}	
 	return neighbour_set;  
 }
 
