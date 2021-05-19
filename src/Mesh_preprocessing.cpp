@@ -155,47 +155,47 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
 
 std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <TrianglePlaneData> &triangles)
 {           
-	//RegionGrowing method used to do preprocessing to mesh model
+  //RegionGrowing method used to do preprocessing to mesh model
        
-	// nIndex = number of triangles
-	// all_triangles_index_set: set for all the triangles
-	// seg_triangles_index_set: segmented triangle set
-	// return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
+  // nIndex = number of triangles
+  // all_triangles_index_set: set for all the triangles
+  // seg_triangles_index_set: segmented triangle set
+  // return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
 
        
-	int nIndex = triangles.size();
-	int seed_index;
-	std::vector < Eigen::Vector3d > seed_triangle {3};
-	std::set<int>all_triangles_index_set; 
-	std::set<int>neibour_triangle_index_set;
-	std::set<int>seg_triangles_index_set;
-	std::set<int>seg_seed_index_set; 
-	std::set<int>index_difference_set; 
-	std::set<std::set<int>> clusters; 
+  int nIndex = triangles.size();
+  int seed_index;
+  std::vector < Eigen::Vector3d > seed_triangle {3};
+  std::set<int>all_triangles_index_set; 
+  std::set<int>neibour_triangle_index_set;
+  std::set<int>seg_triangles_index_set;
+  std::set<int>seg_seed_index_set; 
+  std::set<int>index_difference_set; 
+  std::set<std::set<int>> clusters; 
 	
-	for (int i = 0; i < nIndex; i++)
-	{
-		all_triangles_index_set.insert(i);  
-	}
+  for (int i = 0; i < nIndex; i++)
+  {
+    all_triangles_index_set.insert(i);  
+  }
 						
-	while(all_triangles_index_set.size() != 0)  
-	{
-		seed_index = *all_triangles_index_set.begin(); 		
-		neibour_triangle_index_set = find_neibour(triangles, seed_index); 
-		neibour_triangle_index_set.insert(seed_index);  //one cluster
+  while(all_triangles_index_set.size() != 0)  
+  {
+    seed_index = *all_triangles_index_set.begin(); 		
+    neibour_triangle_index_set = find_neibour(triangles, seed_index); 
+    neibour_triangle_index_set.insert(seed_index);  //one cluster
 				
-		set_difference(neibour_triangle_index_set.begin(), neibour_triangle_index_set.end(),seg_triangles_index_set.begin(), seg_triangles_index_set.end(),inserter( index_difference_set, index_difference_set.begin() ) ); 		
-		seg_triangles_index_set.insert(index_difference_set.begin(),index_difference_set.end());
-		for (std::set<int>::iterator it = index_difference_set.begin(); it != index_difference_set.end(); it++)
-		{
-			all_triangles_index_set.erase(*it);
-		} 		
-		clusters.insert(neibour_triangle_index_set);
+    set_difference(neibour_triangle_index_set.begin(), neibour_triangle_index_set.end(),seg_triangles_index_set.begin(), seg_triangles_index_set.end(),inserter( index_difference_set, index_difference_set.begin() ) ); 		
+    seg_triangles_index_set.insert(index_difference_set.begin(),index_difference_set.end());
+    for (std::set<int>::iterator it = index_difference_set.begin(); it != index_difference_set.end(); it++)
+    {
+      all_triangles_index_set.erase(*it);
+    } 		
+    clusters.insert(neibour_triangle_index_set);
 				
-		index_difference_set.clear();
-		neibour_triangle_index_set.clear();				
-	}
-	return clusters;
+    index_difference_set.clear();
+    neibour_triangle_index_set.clear();				
+  }
+  return clusters;
 }
 
 
