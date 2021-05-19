@@ -4,42 +4,42 @@
 
 void Mesh_preprocessor::setConfig(const YAMLConfig &config)
 {
-  	config_ = config;
+	config_ = config;
 }
 
 void Mesh_preprocessor::Print_Triangles(const std::vector <TrianglePlaneData> &triangles)
 {
-  for (auto it = triangles.begin(); it != triangles.end(); it++)
-  {
-    cout << "Normal:" << (*it).normal << endl;
-    cout <<" point1:" << (*it).points[0] << endl;
-    cout <<" point2:" << (*it).points[1] << endl;
-    cout <<" point3:" << (*it).points[2] << endl;
-  }
+	for (auto it = triangles.begin(); it != triangles.end(); it++)
+	{
+		cout << "Normal:" << (*it).normal << endl;
+		cout <<" point1:" << (*it).points[0] << endl;
+		cout <<" point2:" << (*it).points[1] << endl;
+		cout <<" point3:" << (*it).points[2] << endl;
+	}
 
 }
 
 void Mesh_preprocessor::RegionGrow(const std::vector <TrianglePlaneData> &triangles)
 {
-  //Point cloud based region-growing method
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::search::Search<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
+	//Point cloud based region-growing method
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::search::Search<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+	pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
   
   
-  cloud->points.resize(triangles.size()*3);
+	cloud->points.resize(triangles.size()*3);
  
  
-  int count = 0;
-  for (auto it = triangles.begin(); it != triangles.end(); it++)
-  {
-      for (int i = 0; i < 3; i++)
-      {
-      	cloud->points[count].x = (*it).points[i](0);
+	int count = 0;
+	for (auto it = triangles.begin(); it != triangles.end(); it++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			cloud->points[count].x = (*it).points[i](0);
     	cloud->points[count].y = (*it).points[i](1);
     	cloud->points[count].z = (*it).points[i](2);
     	count++;
-      }
+     }
   }
 
 
@@ -74,9 +74,9 @@ void Mesh_preprocessor::RegionGrow(const std::vector <TrianglePlaneData> &triang
   int counter = 0;
   while (counter < clusters[0].indices.size ())
   {
-    std::cout << clusters[0].indices[counter] << ", ";
-    counter++;
-    if (counter % 10 == 0)
+		std::cout << clusters[0].indices[counter] << ", ";
+		counter++;
+			if (counter % 10 == 0)
       std::cout << std::endl;
   }
   std::cout << std::endl;
@@ -137,12 +137,12 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
 			for(int j = 0; j < 3; j++)
 			{
 				if((triangles[i].points[0] == triangles[expand_id].points[j])||(triangles[i].points[1] == triangles[expand_id].points[j])||(triangles[i].points[2] == triangles[expand_id].points[j]))  // todo: reduct computational time
-        {
+       			{
 					surrounding_set.insert(i);   //find neighbours based on three vertex of seed 
-        }
+               }
 			}        	
 		} 
-    surrounding_set.erase(expand_id);
+    	surrounding_set.erase(expand_id);
                     
 		for(std::set<int>::iterator it = surrounding_set.begin(); it != surrounding_set.end(); it++)
 		{
@@ -161,12 +161,13 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
 
 std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <TrianglePlaneData> &triangles)
 {           
-  //RegionGrowing method used to do preprocessing to mesh model
+	//RegionGrowing method used to do preprocessing to mesh model
        
-  // nIndex = number of triangles
-  // all_triangles_index_set: set for all the triangles
-  // seg_triangles_index_set: segmented triangle set
-  // return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
+	// nIndex = number of triangles
+	// all_triangles_index_set: set for all the triangles
+	// seg_triangles_index_set: segmented triangle set
+	// return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
+
        
 	int nIndex = triangles.size();
 	int seed_index;
