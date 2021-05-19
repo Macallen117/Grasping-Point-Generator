@@ -1,4 +1,3 @@
-
 # Planning Grasps for Assembly Tasks
 
 
@@ -35,9 +34,9 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 
 ### Prepocessing to mesh model: Region-Growing
 
-<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\Pre1.png" alt="Pre1" style="zoom: 50%;" />
+<img src="\images\Pre1.png" alt="Pre1" style="zoom: 50%;" />
 
-<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\Pre2.png" alt="Pre2" style="zoom: 80%;" />
+<img src="\images\Pre2.png" alt="Pre2" style="zoom: 80%;" />
 
 **Procedure:**
 
