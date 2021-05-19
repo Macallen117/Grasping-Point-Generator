@@ -1,4 +1,4 @@
-# Planning Grasps for Assembly Tasks
+`[](url)`# Planning Grasps for Assembly Tasks
 
 
 
@@ -33,7 +33,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 ## 4. Current work
 
 ### Prepocessing to mesh model: Region-Growing
-
+![image](images/Pre1.png)
 <img src="https://gitlab.ipr.kit.edu/uvxgo/planning-grasps-for-assembly-task/-/tree/master/images/Pre1.png" alt="Pre1" style="zoom: 50%;" />
 
 <img src="\images\Pre2.png" alt="Pre2" style="zoom: 80%;" />
