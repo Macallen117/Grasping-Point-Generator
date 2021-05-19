@@ -36,7 +36,7 @@
  *
  */
 
-#include "fgpg/mesh_sampling.h"
+#include "pgfat/mesh_sampling.h"
 
 
 double

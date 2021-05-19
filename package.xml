@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>fgpg</name>
+  <name>pgfat</name>
   <version>0.1.0</version>
-  <description>Grasp pose candidates generator for furniture assembly tasks package</description>
+  <description>Planning grasps for assembly tasks package</description>
 
-  <maintainer email="psh117@snu.ac.kr">Suhan Park</maintainer>
+  <maintainer email="uvxgo@student.kit.edu">ALexander,Qi</maintainer>
 
   <license>BSD</license>
 

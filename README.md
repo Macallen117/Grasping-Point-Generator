@@ -1,42 +1,90 @@
 
-# Grasp Pose Candidates Generator for Furniture Assembly Tasks (F-GPG)
- 
+# Planning Grasps for Assembly Tasks
 
-  
+
+
 
 ## 1. Overview
-   - Author: Suhan Park (psh117@snu.ac.kr)
-   - License: BSD
-   - Description: This packages generates grasp pose candidates for furniture assembly tasks with more strict antipodal points and more tight grasp depth.
-   - Publication: https://ieeexplore.ieee.org/abstract/document/9158930 
-   - `S. Park, J. Baek, S. Kim and J. Park, "Rigid Grasp Candidate Generation for Assembly Tasks", 2020, IEEE/ASME International Conference on Advanced Intelligent Mechatronics (AIM), 2020.`
-
-
-<img src="image/fgpg_results.png" alt="" style="width: 600px;"/>
+   - Description: This project is currently based on the embodiment of the second paper. Data structure and some functions reused from first paper. 
+   - Useful Publication:
+     1.  https://ieeexplore.ieee.org/abstract/document/9158930     Github: https://github.com/psh117/fgpg.git
+     2.  https://ieeexplore.ieee.org/document/9170578      
 
 ## 2. Requirements
-   - ROS (ros-*-desktop-full version is required, tested environment: melodic)
+   - ROS (ros-*-desktop-full version is required)
+   - PCL 1.8 or later
+   - Eigen 3.0 or later
 
-## 3. Compilation
+## 3. Compilation and Execution
+
+The first input is : **configurations** which are loaded using config/options.yaml
+
+The second input is : **stl model** 
 
 ```sh
-cd ~/catkin_ws/src # your ROS workspace
-git clone https://github.com/psh117/fgpg
-cd ~/catkin_ws
+cd ~/Project/src # your ROS workspace
+git clone https://gitlab.ipr.kit.edu/uvxgo/planning-grasps-for-assembly-task.git
+cd ~/Project
 catkin_make
+
+rosrun pgfat pgfat config/options.yaml model.stl  
+rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/meshes/Motor_part/Lager.stl
 ```
 
-## 4. Execution
+## 4. Current work
+
+### Prepocessing to mesh model: Region-Growing
+
+<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\Pre1.png" alt="Pre1" style="zoom: 50%;" />
+
+<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\Pre2.png" alt="Pre2" style="zoom: 80%;" />
+
+**Procedure:**
+
+1. initiates a seed triangle and scans the surrounding triangles of the seed.  
+
+   the seed is now chosen as the first index of a ordered set to save time.
+
+2. If the angle between the normal of the seed triangle and the normal of a nearby triangle is smaller than the first threshold,
+
+   the adjacent triangle is clustered into the same facet as the seed triangle. 
+
+3. After clustering the first facet, the algorithm initiates a new seed triangle and repeats. 
+
+   the second threshold is not be used now to generate new seed unless I am able to reduce the computational time.
+
+   I currently use a set to contain the index of all the segmented triangles. The new seed is chosen as the first index of the rest unsegmented triangle set.
+
+------
+
+**current problem:** 
+
+I can segment the points now but the computation time is a little bit long. 
+
+Reduce computational time to find neighbouring triangles of the seed triangle. 
+
+**Proposed Result:**
 
 
-```sh
-rosrun fgpg fgpg config/options.yaml model.stl
-```
 
-## 5. Configurations
-Some explainations are written in config/options.yaml
+<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\pre3.png" alt="pre3" style="zoom: 80%;" />
 
-## 6. Useful links
-   - atenpas/gpg [github link](https://github.com/atenpas/gpg)
-   
-   
+<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\pre4.png" alt="pre4" style="zoom: 80%;" />
+
+### Random Sampling on facets
+
+   <img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\sammple1.png" alt="sammple1" style="zoom:80%;"  />
+
+
+
+<img src="C:\Users\Macallen\Desktop\Project\src\pgfat\images\sample2.jpg" alt="sample2" style="zoom:80%;" />
+
+**Step 1 : Sampling on each facet.** 
+
+​	the contact points on each facet have equal density and are evenly distributed.
+
+**Step 2 : Removing bad samples:** 
+
+   - near the boundary of facets
+   - close to each other
+
