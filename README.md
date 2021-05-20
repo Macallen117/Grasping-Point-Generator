@@ -1,4 +1,5 @@
-`[](url)`# Planning Grasps for Assembly Tasks
+Planning Grasps for Assembly Tasks
+====
 
 
 
@@ -65,7 +66,7 @@ Reduce computational time to find neighbouring triangles of the seed triangle.
 
 ### Random Sampling on facets
 ![image](images/sammple1.png)
-![image](images/sample2.png)
+![image](images/sample2.jpg)
 
 **Step 1 : Sampling on each facet.** 
 
