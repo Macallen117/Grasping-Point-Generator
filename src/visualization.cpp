@@ -27,7 +27,7 @@ void Visualizer::display_initial(const pcl::PolygonMesh& mesh)
 
 void Visualizer::display_reconstruct(const std::vector <TrianglePlaneData>& triangles)
 {
-  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();  //jide delete
+  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();  
   vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();  
   vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
   vtkIdType pid[3];  
@@ -46,7 +46,7 @@ void Visualizer::display_reconstruct(const std::vector <TrianglePlaneData>& tria
     polydata->SetPolys(cells);
   }
 
-  pcl::visualization::PCLVisualizer vis2 ("mesh segmentation");
+  pcl::visualization::PCLVisualizer vis2 ("mesh reconstruction");
   pcl::PolygonMesh mesh;  
   pcl::io::vtk2mesh(polydata,mesh);    
     
@@ -70,7 +70,7 @@ void Visualizer::display_cluster(const std::vector <TrianglePlaneData>& triangle
   for (std::set<std::set<int>>::iterator cluster = clusters.begin(); cluster != clusters.end(); cluster++)
   {
     clusters_index++;
-    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();  //jide delete
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();  
     vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();  
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
     vtkIdType pid[3];  
