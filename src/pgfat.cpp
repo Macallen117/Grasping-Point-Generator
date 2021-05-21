@@ -49,16 +49,15 @@ int main(int argc, char** argv)
   vis.setConfig(config);
   gpg.setConfig(config);
   
-  //mpp.Print_Triangles(triangles);
-  //mpp.RegionGrow(triangles);
   std::set<std::set<int>> clusters;
   clusters = mpp.RegionGrowing(triangles);
-  
+  std::cout<<"number of clusters:"<<clusters.size()<<std::endl;
+ 
   
   vis.display_initial(mesh);
+  vis.display_cluster(triangles,clusters);
      
-  
-  //gpg.display_initial(mesh);
+
   //gpg.setMesh(triangles);
   //gpg.generate();
   //gpg.display(mesh);

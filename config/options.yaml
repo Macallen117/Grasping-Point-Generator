@@ -1,6 +1,6 @@
 
 # Mesh Preprocessing part
-Theta1: 3.0 #first threshold for planarity
+Theta1: 10.0 #first threshold for planarity
 Theta2: 2.0 #second thereshold for overlapping  may not needed 
 
 
@@ -17,7 +17,8 @@ display_grasp: false
 attach_coordination: false
 
 background_color: [1.0, 1.0, 1.0]
-mesh_color: [0.3529,0.1592,0.1608]
+#mesh_color: [0.3529,0.1592,0.1608]
+mesh_color: [0.0,0.0,0.0]
 point_color: [0.8353,0.7686,0.6314]
 grasp_color: [0.3059, 0.4118, 0.102]
 point_size: 15

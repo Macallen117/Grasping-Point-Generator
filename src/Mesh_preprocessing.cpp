@@ -101,7 +101,7 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
   //find neibouring Triangle of the seed triangle       
   //The normals of the founded Triangles should be coherent with the seed
 	
-  // nIndex = number of triangles
+  // nIndex: number of triangles
   // open_set: set for expansion
   // closed_set: expanded index will be added
   // selected_set: set of index which fulfills threshold theta1
@@ -189,7 +189,9 @@ std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <Tria
     for (std::set<int>::iterator it = index_difference_set.begin(); it != index_difference_set.end(); it++)
     {
       all_triangles_index_set.erase(*it);
-    } 		
+    }
+    std::cout<<"all size:"<<all_triangles_index_set.size()<<std::endl;
+    std::cout<<"seg size:"<<seg_triangles_index_set.size()<<std::endl;		
     clusters.insert(neibour_triangle_index_set);
 				
     index_difference_set.clear();
@@ -197,5 +199,6 @@ std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <Tria
   }
   return clusters;
 }
+
 
 
