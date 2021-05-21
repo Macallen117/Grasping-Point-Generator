@@ -60,9 +60,18 @@ I can segment the points now but the computation time is a little bit long.
 
 Reduce computational time to find neighbouring triangles of the seed triangle. 
 
-**Proposed Result:**
+**Proposed Result in the paper:**
+
 ![image](images/pre3.png)
 ![image](images/pre4.png)
+
+**Result of embodiment:**
+
+![image](images/Seg_result/1.png)
+![image](images/Seg_result/2.png)
+![image](images/Seg_result/3.png)
+![image](images/Seg_result/4.png)
+
 
 ### Random Sampling on facets
 ![image](images/sammple1.png)
