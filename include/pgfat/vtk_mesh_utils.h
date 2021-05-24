@@ -118,14 +118,15 @@ static std::vector<TrianglePlaneData> buildTriangleData(pcl::PolygonMesh & mesh)
         neighbors.push_back(neighborCellIds->GetId(j));
         plane_data.neighbors.insert(neighborCellIds->GetId(j));
       }
-
+      /*
       std::cout << "cell id is: " << cellId << std::endl;
       std::cout << "Edge neighbor ids are: " << std::endl;
        for (auto it1 = plane_data.neighbors.begin(); it1 != plane_data.neighbors.end(); ++it1)
        {
          std::cout << " " << *it1;
        }
-       std::cout << std::endl;     
+       std::cout << std::endl;
+       */     
     }
     cellId++;
     Eigen::Vector3d v1 = Eigen::Vector3d (p1[0], p1[1], p1[2]) - Eigen::Vector3d (p3[0], p3[1], p3[2]);
