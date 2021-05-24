@@ -55,7 +55,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 ------
 
 **current problem:** 
-
+the segmentation can be completed in a reasonable time, 20K points about 40 seconds.
 two many clusters to be rendered in the same window (e.g 4000 clusters for mesh model with 20k triangles) 
 
 **Proposed Result in the paper:**
