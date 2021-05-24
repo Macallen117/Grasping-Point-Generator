@@ -4,6 +4,9 @@
 #include <iostream>
 #include <random>
 #include <string>
+//#include <stdafx.h>
+#include <ctime>
+#include <cstdlib>
 
 #include <Eigen/Dense>
 
@@ -39,6 +42,7 @@
 #include "pgfat/triangle_plane_data.h"
 #include "pgfat/yaml_config.h"
 
+#define N  999
 
 
 class Visualizer

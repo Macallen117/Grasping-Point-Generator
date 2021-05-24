@@ -34,8 +34,8 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 ## 4. Current work
 
 ### Prepocessing to mesh model: Region-Growing
-![image](images/Pre1.png)
-![image](images/Pre2.png)
+![image](images/paper_Images/Pre1.png)
+![image](images/paper_Images/Pre2.png)
 **Procedure:**
 
 1. initiates a seed triangle and scans the surrounding triangles of the seed.  
@@ -60,20 +60,26 @@ two many clusters to be rendered in the same window (e.g 4000 clusters for mesh 
 
 **Proposed Result in the paper:**
 
-![image](images/pre3.png)
-![image](images/pre4.png)
+![image](images/paper_Images/pre3.png)
+![image](images/paper_Images/pre4.png)
 
 **Result of embodiment:**
 
-![image](images/Seg_result/1.png)
-![image](images/Seg_result/2.png)
-![image](images/Seg_result/3.png)
-![image](images/Seg_result/4.png)
+![image](images/seg_Results/seg_Aufsatz.png)
+![image](images/seg_Results/seg_Deckel.png)
+![image](images/seg_Results/seg_Gehaeuse.png)
+![image](images/seg_Results/seg_Getriebegehaeuse.png)
+![image](images/seg_Results/seg_Gewindeschnecke.png)
+![image](images/seg_Results/seg_Lager.png)
+![image](images/seg_Results/seg_M4_screw.png)
+![image](images/seg_Results/seg_Spule_einfach.png)
+![image](images/seg_Results/seg_Stift.png)
+![image](images/seg_Results/seg_Zahnrad.png)
 
 
 ### Random Sampling on facets
-![image](images/sammple1.png)
-![image](images/sample2.jpg)
+![image](images/paper_Images/sammple1.png)
+![image](images/paper_Images/sample2.jpg)
 
 **Step 1 : Sampling on each facet.** 
 

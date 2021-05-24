@@ -66,6 +66,7 @@ void Visualizer::display_cluster(const std::vector <TrianglePlaneData>& triangle
   
   int clusters_index = 0;
   double color_range = 1.0 / clusters.size();
+  srand(time(NULL));
   for (std::set<std::set<int>>::iterator cluster = clusters.begin(); cluster != clusters.end(); cluster++)
   {
     clusters_index++;
@@ -91,7 +92,10 @@ void Visualizer::display_cluster(const std::vector <TrianglePlaneData>& triangle
     pcl::io::vtk2mesh(polydata,mesh);      // too many mesh added to the same window!!!!!
     std::string mesh_name(std::to_string(clusters_index));
     vis2.addPolygonMesh(mesh, mesh_name,0);
-    vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0 - config_.mesh_color[0] - color_range * clusters_index, config_.mesh_color[1] + color_range * clusters_index, config_.mesh_color[2] + color_range * clusters_index/2, mesh_name);
+
+    vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, rand() % (N + 1) / (float)(N + 1), rand() % (N + 1) / (float)(N + 1), rand() % (N + 1) / (float)(N + 1), mesh_name);
+    
+    //vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0 - config_.mesh_color[0] - color_range * clusters_index, config_.mesh_color[1] + color_range * clusters_index, config_.mesh_color[2] + color_range * clusters_index/2, mesh_name);
     vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, mesh_name);
              
   }
