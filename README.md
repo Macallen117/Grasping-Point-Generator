@@ -48,7 +48,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 
 3. After clustering the first facet, the algorithm initiates a new seed triangle and repeats. 
 
-   the second threshold is not be used now to generate new seed unless I am able to reduce the computational time.
+   the second threshold is not be used to reduce the computational time.
 
    I currently use a set to contain the index of all the segmented triangles. The new seed is chosen as the first index of the rest unsegmented triangle set.
 
@@ -56,9 +56,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 
 **current problem:** 
 
-I can segment the points now but the computation time is a little bit long. 
-
-Reduce computational time to find neighbouring triangles of the seed triangle. 
+two many clusters to be rendered in the same window (e.g 4000 clusters for mesh model with 20k triangles) 
 
 **Proposed Result in the paper:**
 
