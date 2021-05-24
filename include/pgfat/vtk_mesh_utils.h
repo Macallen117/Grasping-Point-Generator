@@ -35,11 +35,21 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/common/transforms.h>
 #include <vtkVersion.h>
+#include <vtkNew.h>
 #include <vtkPLYReader.h>
 #include <vtkOBJReader.h>
 #include <vtkTriangle.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkCell.h>
+#include <vtkDataSetMapper.h>
+#include <vtkExtractSelection.h>
+#include <vtkIdList.h>
+#include <vtkIdTypeArray.h>
+#include <vtkNamedColors.h>
+#include <vtkPolyData.h>
+
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
@@ -64,19 +74,60 @@ static std::vector<TrianglePlaneData> buildTriangleData(pcl::PolygonMesh & mesh)
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
 
   double p1[3], p2[3], p3[3];
-
   std::vector<TrianglePlaneData> triangles;
-  
+      
   vtkIdType npts = 0;
   vtkIdType *ptIds = nullptr;
+  vtkIdType cellId = 0;
+
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
-  {
+  {  
     TrianglePlaneData plane_data;
     polydata->GetPoint (ptIds[0], p1);
     polydata->GetPoint (ptIds[1], p2);
     polydata->GetPoint (ptIds[2], p3);
     plane_data.area = vtkTriangle::TriangleArea (p1, p2, p3);
+    
+    std::list<vtkIdType> neighbors;  
+    auto cellPointIds = vtkSmartPointer<vtkIdList>::New();
+    
+    polydata->GetCellPoints(cellId, cellPointIds);
+    //triangleFilter->GetOutput()->GetCellPoints(cellId, cellPointIds);
+    
+    for (vtkIdType i = 0; i < cellPointIds->GetNumberOfIds(); i++)
+    {
+      auto idList = vtkSmartPointer<vtkIdList>::New();
+      // add one of the edge points
+      idList->InsertNextId(cellPointIds->GetId(i));
+      // add the other edge point
+      if (i + 1 == cellPointIds->GetNumberOfIds())
+      {
+        idList->InsertNextId(cellPointIds->GetId(0));
+      }
+      else
+      {
+        idList->InsertNextId(cellPointIds->GetId(i + 1));
+      }
+      // get the neighbors of the cell
+      auto neighborCellIds = vtkSmartPointer<vtkIdList>::New();
+      polydata->GetCellNeighbors(cellId, idList, neighborCellIds);
+      //triangleFilter->GetOutput()->GetCellNeighbors(cellId, idList, neighborCellIds);
+      
+      for (vtkIdType j = 0; j < neighborCellIds->GetNumberOfIds(); j++)
+      {
+        neighbors.push_back(neighborCellIds->GetId(j));
+        plane_data.neighbors.insert(neighborCellIds->GetId(j));
+      }
 
+      std::cout << "cell id is: " << cellId << std::endl;
+      std::cout << "Edge neighbor ids are: " << std::endl;
+       for (auto it1 = plane_data.neighbors.begin(); it1 != plane_data.neighbors.end(); ++it1)
+       {
+         std::cout << " " << *it1;
+       }
+       std::cout << std::endl;     
+    }
+    cellId++;
     Eigen::Vector3d v1 = Eigen::Vector3d (p1[0], p1[1], p1[2]) - Eigen::Vector3d (p3[0], p3[1], p3[2]);
     Eigen::Vector3d v2 = Eigen::Vector3d (p2[0], p2[1], p2[2]) - Eigen::Vector3d (p3[0], p3[1], p3[2]);
     Eigen::Vector3d n = v1.cross (v2);

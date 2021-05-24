@@ -54,7 +54,7 @@ int main(int argc, char** argv)
   std::cout<<"number of clusters:"<<clusters.size()<<std::endl;
  
   
-  vis.display_initial(mesh);
+  //vis.display_initial(mesh);
   vis.display_cluster(triangles,clusters);
      
 

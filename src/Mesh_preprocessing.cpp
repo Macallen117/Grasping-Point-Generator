@@ -125,7 +125,8 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
     selected_set.clear();
     difference_set.clear();
     surrounding_set.clear();
-		
+    
+    /*		
     for(int i = 0; i < nIndex; i++)
     {
       for(int j = 0; j < 3; j++)
@@ -135,8 +136,10 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
           surrounding_set.insert(i);   //find neighbours based on three vertex of seed 
         }
       }        	
-    } 
-    surrounding_set.erase(expand_id);
+    }
+    */ 
+    surrounding_set.insert(triangles[expand_id].neighbors.begin(),triangles[expand_id].neighbors.end());   
+    //surrounding_set.erase(expand_id);
                     
     for(std::set<int>::iterator it = surrounding_set.begin(); it != surrounding_set.end(); it++)
     {
@@ -146,7 +149,7 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
     neighbour_set.insert(selected_set.begin(),selected_set.end()); //all face id fulfillstheta1                     
     closed_set.insert(expand_id);        		
     open_set.erase(expand_id);         		
-    set_difference( selected_set.begin(), selected_set.end(),closed_set.begin(), closed_set.end(),inserter( difference_set, difference_set.begin() ) );   //expand only once
+    set_difference( selected_set.begin(), selected_set.end(),closed_set.begin(), closed_set.end(),inserter( difference_set, difference_set.begin() ) ); 
     open_set.insert(difference_set.begin(),difference_set.end()); 
   }	
   return neighbour_set;  

@@ -31,12 +31,15 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>
+#include <set>
+
 
 
 struct TrianglePlaneData
 {
   Eigen::Vector3d normal;
   std::vector < Eigen::Vector3d > points {3};
+  std::set <int> neighbors;  
   double area;
   Eigen::Vector3d incenter;
 

@@ -58,12 +58,11 @@ void Visualizer::display_reconstruct(const std::vector <TrianglePlaneData>& tria
   vis2.spin ();
 }
 
-
-
 void Visualizer::display_cluster(const std::vector <TrianglePlaneData>& triangles, const std::set<std::set<int>>& clusters)
 {
   pcl::visualization::PCLVisualizer vis2 ("mesh segmentation");
-  pcl::PolygonMesh mesh; 
+  pcl::PolygonMesh mesh;
+  vis2.setBackgroundColor (config_.background_color[0], config_.background_color[1], config_.background_color[2]); 
   
   int clusters_index = 0;
   double color_range = 1.0 / clusters.size();
@@ -89,12 +88,12 @@ void Visualizer::display_cluster(const std::vector <TrianglePlaneData>& triangle
       face_index++;
     }
  
-    pcl::io::vtk2mesh(polydata,mesh);    
+    pcl::io::vtk2mesh(polydata,mesh);      // too many mesh added to the same window!!!!!
     std::string mesh_name(std::to_string(clusters_index));
     vis2.addPolygonMesh(mesh, mesh_name,0);
     vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0 - config_.mesh_color[0] - color_range * clusters_index, config_.mesh_color[1] + color_range * clusters_index, config_.mesh_color[2] + color_range * clusters_index/2, mesh_name);
     vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, mesh_name);
-    vis2.setBackgroundColor (config_.background_color[0], config_.background_color[1], config_.background_color[2]);         
+             
   }
   vis2.spin ();
 }
