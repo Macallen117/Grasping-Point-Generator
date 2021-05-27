@@ -50,7 +50,7 @@ void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
                      float r1, float r2, Eigen::Vector3d& p)
 {
-  float r1sqr = std::sqrt (r1);
+  float r1sqr = std::sqrt (r1); //0-1值r1的平方根
   float OneMinR1Sqr = (1 - r1sqr);
   float OneMinR2 = (1 - r2);
   a1 *= OneMinR1Sqr;
@@ -68,19 +68,17 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
 }
 
 void
-randPSurface (const std::vector <TrianglePlaneData>& planes, 
-std::vector<double> &cumulativeAreas, double totalArea, 
-Eigen::Vector3d& p, Eigen::Vector3d& n, 
-double r, double r1, double r2)
+randPSurface (const std::vector <TrianglePlaneData>& planes, std::vector<int> &Area_index, std::vector<double> &cumulativeAreas, double totalArea, 
+Eigen::Vector3d& p, Eigen::Vector3d& n, double r, double r1, double r2)
 {
-  std::vector<double>::iterator low = std::lower_bound (cumulativeAreas.begin (), cumulativeAreas.end (), r);
-  int el = int (low - cumulativeAreas.begin ());
+  std::vector<double>::iterator low = std::lower_bound (cumulativeAreas.begin (), cumulativeAreas.end (), r);   
+  int el = Area_index[int (low - cumulativeAreas.begin ())];
 
-  // OBJ: Vertices are stored in a counter-clockwise order by default
   Eigen::Vector3d v1 = planes[el].points[0] - planes[el].points[2];
   Eigen::Vector3d v2 = planes[el].points[1] - planes[el].points[2];
   n = v1.cross (v2);
-  n.normalize ();
+  n.normalize ();  
+  n*=60;
 
   randomPointTriangle (float (planes[el].points[0][0]), float (planes[el].points[0][1]), float (planes[el].points[0][2]),
                        float (planes[el].points[1][0]), float (planes[el].points[1][1]), float (planes[el].points[1][2]),

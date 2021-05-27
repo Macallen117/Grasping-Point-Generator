@@ -1,10 +1,8 @@
 
-
 #pragma once
 #include <iostream>
 #include <random>
 #include <string>
-//#include <stdafx.h>
 #include <ctime>
 #include <cstdlib>
 
@@ -36,29 +34,30 @@
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 
-
 #include "pgfat/geometrics.h"
 #include "pgfat/mesh_sampling.h"
 #include "pgfat/triangle_plane_data.h"
 #include "pgfat/yaml_config.h"
+#include "pgfat/grasp_point_generator.h"
+#include "pgfat/Mesh_preprocessing.h"
 
 #define N  999
-
 
 class Visualizer
 {
 public:
-
   void setConfig(const YAMLConfig &config);
+  
+  void setProperty(const Mesh_preprocessor &mpp, const GraspPointGenerator &gpg);
   void setMesh(const std::vector <TrianglePlaneData>& triangle_mesh);
   void display_initial(const pcl::PolygonMesh& mesh);
-  void display_reconstruct(const std::vector <TrianglePlaneData>& triangles);
-  void display_cluster(const std::vector <TrianglePlaneData>& triangles,const std::set<std::set<int>>& clusters);
+  void display_reconstruct();
+  void display_cluster();
   
- 
 private:
-
   std::vector <TrianglePlaneData> planes_;
   YAMLConfig config_;
+  GraspPointGenerator gpg_;
+  Mesh_preprocessor mpp_;
 
 };

@@ -6,9 +6,11 @@ struct YAMLConfig
   void loadConfig(std::string file_name)
   {
     YAML::Node yamlnode = YAML::LoadFile(file_name);
+
     Theta1 = yamlnode["Theta1"].as<double> ();
     Theta2 = yamlnode["Theta2"].as<double> ();
     
+    point_generation_method = yamlnode["point_generation_method"].as<std::string>();
     Distance1 = yamlnode["Distance1"].as<double> ();
     Distance2 = yamlnode["Distance2"].as<double> ();
     
@@ -24,6 +26,7 @@ struct YAMLConfig
     point_size = yamlnode["point_size"].as<int> ();
   }
  
+  std::string point_generation_method;
   double Theta1;
   double Theta2;
 

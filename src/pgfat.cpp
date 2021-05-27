@@ -6,13 +6,12 @@
 #include <vector>
 #include <string>
 
-
+#include "pgfat/visualization.h"
 #include "pgfat/grasp_point_generator.h"
 #include "pgfat/yaml_config.h"
 #include "pgfat/vtk_mesh_utils.h"
 #include "pgfat/triangle_plane_data.h"
 #include "pgfat/Mesh_preprocessing.h"
-#include "pgfat/visualization.h"
 
 using namespace std;
 using namespace pcl;
@@ -33,34 +32,31 @@ int main(int argc, char** argv)
       ROS_ERROR("Failed to load yaml file");
   }
 
-
   std::string file_name (argv[2]);
 
   pcl::PolygonMesh mesh;
   pcl::io::loadPolygonFileSTL(file_name, mesh);  
   std::vector<TrianglePlaneData> triangles = buildTriangleData(mesh);
-
    
   Mesh_preprocessor mpp;
-  Visualizer vis;
   GraspPointGenerator gpg;
+  Visualizer vis;
   
-  mpp.setConfig(config);
-  vis.setConfig(config);
+  mpp.setConfig(config);  
   gpg.setConfig(config);
+  vis.setConfig(config);
   
-  std::set<std::set<int>> clusters;
-  clusters = mpp.RegionGrowing(triangles);
-  std::cout<<"number of clusters:"<<clusters.size()<<std::endl;
- 
+  mpp.setMesh(triangles);
+  gpg.setMesh(triangles);
+  vis.setMesh(triangles);
+   
+  mpp.RegionGrowing();   
   
-  //vis.display_initial(mesh);
-  vis.display_cluster(triangles,clusters);
-     
-
-  //gpg.setMesh(triangles);
-  //gpg.generate();
-  //gpg.display(mesh);
+  gpg.setClusters(mpp.clusters);
+  gpg.randomPointGenerate();
+       
+  vis.setProperty(mpp, gpg);
+  vis.display_cluster(); 
 
 
   return 0;

@@ -26,15 +26,19 @@ class Mesh_preprocessor
 {
 public:
   void setConfig(const YAMLConfig &config);
-  void Print_Triangles(const std::vector <TrianglePlaneData> &triangles);
-  void RegionGrow(const std::vector <TrianglePlaneData> &triangles);
+  void setMesh(const std::vector <TrianglePlaneData>& triangle_mesh);
+  void Print_Triangles();
+  void RegionGrow();
   bool CheckNormal(const Eigen::Vector3d& Points1,const Eigen::Vector3d& Points2);
   
-  std::set<int> find_neibour(const std::vector <TrianglePlaneData> &triangles, const int& seed_index); 
-  std::set<std::set<int>> RegionGrowing(const std::vector <TrianglePlaneData> &triangles);
+  std::set<int> find_neibour(const int& seed_index); 
+  void RegionGrowing();
+  
+  std::set<std::set<int>> clusters;
 private:
   YAMLConfig config_;
-
+  std::vector <TrianglePlaneData> planes_;
+  
 
 };
 

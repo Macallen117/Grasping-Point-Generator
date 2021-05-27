@@ -36,11 +36,12 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
 add_library(${PROJECT_NAME}_lib
+  src/visualization.cpp
   src/mesh_sampling.cpp 
   src/grasp_point_generator.cpp
   src/geometrics.cpp
   src/Mesh_preprocessing.cpp
-  src/visualization.cpp
+  
 )
 
 add_executable(${PROJECT_NAME} 

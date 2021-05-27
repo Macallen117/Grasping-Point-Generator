@@ -7,29 +7,33 @@ void Mesh_preprocessor::setConfig(const YAMLConfig &config)
   config_ = config;
 }
 
-void Mesh_preprocessor::Print_Triangles(const std::vector <TrianglePlaneData> &triangles)
+void Mesh_preprocessor::setMesh(const std::vector <TrianglePlaneData>& triangle_mesh)
 {
-  for (auto it = triangles.begin(); it != triangles.end(); it++)
+  planes_ = triangle_mesh;
+	
+}
+void Mesh_preprocessor::Print_Triangles()
+{
+  for (auto it = planes_.begin(); it != planes_.end(); it++)
   {
     cout << "Normal:" << (*it).normal << endl;
     cout <<" point1:" << (*it).points[0] << endl;
     cout <<" point2:" << (*it).points[1] << endl;
     cout <<" point3:" << (*it).points[2] << endl;
   }
-
 }
 
-void Mesh_preprocessor::RegionGrow(const std::vector <TrianglePlaneData> &triangles)
+void Mesh_preprocessor::RegionGrow()
 {
   //Point cloud based region-growing method
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::search::Search<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
   pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
    
-  cloud->points.resize(triangles.size()*3);
+  cloud->points.resize(planes_.size()*3);
  
   int count = 0;
-  for (auto it = triangles.begin(); it != triangles.end(); it++)
+  for (auto it = planes_.begin(); it != planes_.end(); it++)
   {
     for (int i = 0; i < 3; i++)
     {
@@ -96,7 +100,7 @@ bool Mesh_preprocessor::CheckNormal(const Eigen::Vector3d& Points1,const Eigen::
 }
 
 
-std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneData> &triangles, const int& seed_index)
+std::set<int> Mesh_preprocessor::find_neibour(const int& seed_index)
 {	
   //find neibouring Triangle of the seed triangle       
   //The normals of the founded Triangles should be coherent with the seed
@@ -115,9 +119,9 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
   std::set<int>surrounding_set;
   Eigen::Vector3d seed_triangle_normal;
   int expand_id;
-  int nIndex = triangles.size();	
+  int nIndex = planes_.size();	
   open_set.insert(seed_index); 
-  seed_triangle_normal = triangles[seed_index].normal;
+  seed_triangle_normal = planes_[seed_index].normal;
 
   while (open_set.size() != 0)
   {
@@ -126,24 +130,12 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
     difference_set.clear();
     surrounding_set.clear();
     
-    /*		
-    for(int i = 0; i < nIndex; i++)
-    {
-      for(int j = 0; j < 3; j++)
-      {
-        if((triangles[i].points[0] == triangles[expand_id].points[j])||(triangles[i].points[1] == triangles[expand_id].points[j])||(triangles[i].points[2] == triangles[expand_id].points[j]))  // todo: reduct computational time
-        {
-          surrounding_set.insert(i);   //find neighbours based on three vertex of seed 
-        }
-      }        	
-    }
-    */ 
-    surrounding_set.insert(triangles[expand_id].neighbors.begin(),triangles[expand_id].neighbors.end());   
+    surrounding_set.insert(planes_[expand_id].neighbors.begin(),planes_[expand_id].neighbors.end());   
     //surrounding_set.erase(expand_id);
                     
     for(std::set<int>::iterator it = surrounding_set.begin(); it != surrounding_set.end(); it++)
     {
-      if(CheckNormal(triangles[*it].normal,seed_triangle_normal))    selected_set.insert(*it); 
+      if(CheckNormal(planes_[*it].normal,seed_triangle_normal))    selected_set.insert(*it); 
     }
                        
     neighbour_set.insert(selected_set.begin(),selected_set.end()); //all face id fulfillstheta1                     
@@ -156,7 +148,7 @@ std::set<int> Mesh_preprocessor::find_neibour(const std::vector <TrianglePlaneDa
 }
 
 
-std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <TrianglePlaneData> &triangles)
+void Mesh_preprocessor::RegionGrowing()
 {           
   //RegionGrowing method used to do preprocessing to mesh model
        
@@ -164,17 +156,15 @@ std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <Tria
   // all_triangles_index_set: set for all the triangles
   // seg_triangles_index_set: segmented triangle set
   // return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
-
        
-  int nIndex = triangles.size();
+  int nIndex = planes_.size();
   int seed_index;
   std::vector < Eigen::Vector3d > seed_triangle {3};
   std::set<int>all_triangles_index_set; 
   std::set<int>neibour_triangle_index_set;
   std::set<int>seg_triangles_index_set;
   std::set<int>seg_seed_index_set; 
-  std::set<int>index_difference_set; 
-  std::set<std::set<int>> clusters; 
+  std::set<int>index_difference_set;  
 	
   for (int i = 0; i < nIndex; i++)
   {
@@ -184,7 +174,7 @@ std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <Tria
   while(all_triangles_index_set.size() != 0)  
   {
     seed_index = *all_triangles_index_set.begin(); 		
-    neibour_triangle_index_set = find_neibour(triangles, seed_index); 
+    neibour_triangle_index_set = find_neibour(seed_index); 
     neibour_triangle_index_set.insert(seed_index);  //one cluster
 				
     set_difference(neibour_triangle_index_set.begin(), neibour_triangle_index_set.end(),seg_triangles_index_set.begin(), seg_triangles_index_set.end(),inserter( index_difference_set, index_difference_set.begin() ) ); 		
@@ -200,7 +190,7 @@ std::set<std::set<int>> Mesh_preprocessor::RegionGrowing(const std::vector <Tria
     index_difference_set.clear();
     neibour_triangle_index_set.clear();				
   }
-  return clusters;
+  std::cout<<"number of clusters:"<<clusters.size()<<std::endl;
 }
 
 

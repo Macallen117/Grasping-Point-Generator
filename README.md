@@ -85,8 +85,35 @@ two many clusters to be rendered in the same window (e.g 4000 clusters for mesh 
 
 ​	the contact points on each facet have equal density and are evenly distributed.
 
-**Step 2 : Removing bad samples:** 
+**Result of embodiment:**
+**points normals on one facet:**
 
+![image](images/sampling_effect_visualization/sampling_effect2.png)
+
+**points normals on all the facets:**
+
+![image](images/sampling_effect_visualization/sampling_effect1.png)
+
+**Step 2 : Removing bad samples:** 
+Whether this part is to be done depends on the results of the evaluation. No need if the result is good enough.
    - near the boundary of facets
    - close to each other
+   
+### Make Pair for two-finger paraller grippers
+two-finger parallel grippers needs two contact points with opposite contact normals..
+finds parallel facets and computes candidate contact pairs by examining the contact points on the parallel facets.
+
+![image](images/paper_Images/makepair.png)
+
+### Planning the grasp configuration
+
+1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs. 
+2. examines the stability of the planned grasps.
+
+![image](images/paper_Images/algorithm.png)
+
+first collision check:  checks if the stroke of the gripper collides with the object
+second collision check:  checks if the whole hand (both fingers and palm) collides with the object
+
+
 

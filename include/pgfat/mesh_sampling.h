@@ -42,7 +42,5 @@ void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
                      float r1, float r2, Eigen::Vector3d& p);
 void
-randPSurface (const std::vector <TrianglePlaneData>& planes, 
-std::vector<double> &cumulativeAreas, double totalArea, 
-Eigen::Vector3d& p, Eigen::Vector3d& n, 
-double r, double r1, double r2);
+randPSurface (const std::vector <TrianglePlaneData>& planes, std::vector<int> &cArea_index, std::vector<double> &cumulativeAreas, double totalArea, 
+Eigen::Vector3d& p, Eigen::Vector3d& n, double r, double r1, double r2);
