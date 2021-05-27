@@ -113,7 +113,7 @@ finds parallel facets and computes candidate contact pairs by examining the cont
 
 ![image](images/paper_Images/algorithm.png)
 
-<font size=8>first collision check:  checks if the stroke of the gripper collides with the object.</font>
+<font size="5">first collision check:  checks if the stroke of the gripper collides with the object.</font><br />
 
 second collision check:  checks if the whole hand (both fingers and palm) collides with the object
 
