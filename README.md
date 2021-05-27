@@ -108,16 +108,17 @@ Whether this part is to be done depends on the results of the evaluation. No nee
 
 ## Planning the grasp configuration
 
-**1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs. **
+**1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs.**
+
 **2. examines the stability of the planned grasps.**
 
 ![image](images/paper_Images/algorithm.png)
 
-**stmesh denotes the collision model of a gripper’s stroke. **
+**stmesh denotes the collision model of a gripper’s stroke**
 
-**eemesh denotes the collision model of a gripper.**
+**eemesh denotes the collision model of a gripper**
 
-**first collision check:  checks if the stroke of the gripper collides with the object.**
+**first collision check:  checks if the stroke of the gripper collides with the object**
 
 **second collision check:  checks if the whole hand (both fingers and palm) collides with the object**
 
