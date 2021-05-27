@@ -100,7 +100,8 @@ Whether this part is to be done depends on the results of the evaluation. No nee
    - close to each other
    
 ### Make Pair for two-finger paraller grippers
-two-finger parallel grippers needs two contact points with opposite contact normals..
+two-finger parallel grippers needs two contact points with opposite contact normals.
+
 finds parallel facets and computes candidate contact pairs by examining the contact points on the parallel facets.
 
 ![image](images/paper_Images/makepair.png)
@@ -112,7 +113,8 @@ finds parallel facets and computes candidate contact pairs by examining the cont
 
 ![image](images/paper_Images/algorithm.png)
 
-first collision check:  checks if the stroke of the gripper collides with the object
+<font size=8>first collision check:  checks if the stroke of the gripper collides with the object.</font>
+
 second collision check:  checks if the whole hand (both fingers and palm) collides with the object
 
 
