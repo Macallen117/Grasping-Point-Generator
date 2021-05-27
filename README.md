@@ -4,18 +4,18 @@ Planning Grasps for Assembly Tasks
 
 
 
-## 1. Overview
+# 1. Overview
    - Description: This project is currently based on the embodiment of the second paper. Data structure and some functions reused from first paper. 
    - Useful Publication:
      1.  https://ieeexplore.ieee.org/abstract/document/9158930     Github: https://github.com/psh117/fgpg.git
      2.  https://ieeexplore.ieee.org/document/9170578      
 
-## 2. Requirements
+# 2. Requirements
    - ROS (ros-*-desktop-full version is required)
    - PCL 1.8 or later
    - Eigen 3.0 or later
 
-## 3. Compilation and Execution
+# 3. Compilation and Execution
 
 The first input is : **configurations** which are loaded using config/options.yaml
 
@@ -31,9 +31,9 @@ rosrun pgfat pgfat config/options.yaml model.stl
 rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/meshes/Motor_part/Lager.stl
 ```
 
-## 4. Current work
+# 4. Current work
 
-### Prepocessing to mesh model: Region-Growing
+## Prepocessing to mesh model: Region-Growing
 ![image](images/paper_Images/Pre1.png)
 ![image](images/paper_Images/Pre2.png)
 **Procedure:**
@@ -77,7 +77,7 @@ two many clusters to be rendered in the same window (e.g 4000 clusters for mesh 
 ![image](images/seg_Results/seg_Zahnrad.png)
 
 
-### Random Sampling on facets
+## Random Sampling on facets
 ![image](images/paper_Images/sammple1.png)
 ![image](images/paper_Images/sample2.jpg)
 
@@ -99,23 +99,27 @@ Whether this part is to be done depends on the results of the evaluation. No nee
    - near the boundary of facets
    - close to each other
    
-### Make Pair for two-finger paraller grippers
-two-finger parallel grippers needs two contact points with opposite contact normals.
+## Make Pair for two-finger paraller grippers
+**two-finger parallel grippers needs two contact points with opposite contact normals.**
 
-finds parallel facets and computes candidate contact pairs by examining the contact points on the parallel facets.
+**finds parallel facets and computes candidate contact pairs by examining the contact points on the parallel facets.**
 
 ![image](images/paper_Images/makepair.png)
 
-### Planning the grasp configuration
+## Planning the grasp configuration
 
-1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs. 
-2. examines the stability of the planned grasps.
+**1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs. **
+**2. examines the stability of the planned grasps.**
 
 ![image](images/paper_Images/algorithm.png)
 
-<font size="5">first collision check:  checks if the stroke of the gripper collides with the object.</font><br />
+**stmesh denotes the collision model of a gripper’s stroke. **
 
-second collision check:  checks if the whole hand (both fingers and palm) collides with the object
+**eemesh denotes the collision model of a gripper.**
+
+**first collision check:  checks if the stroke of the gripper collides with the object.**
+
+**second collision check:  checks if the whole hand (both fingers and palm) collides with the object**
 
 
 
