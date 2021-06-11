@@ -78,7 +78,6 @@ Eigen::Vector3d& p, Eigen::Vector3d& n, double r, double r1, double r2)
   Eigen::Vector3d v2 = planes[el].points[1] - planes[el].points[2];
   n = v1.cross (v2);
   n.normalize ();  
-  n*=60;
 
   randomPointTriangle (float (planes[el].points[0][0]), float (planes[el].points[0][1]), float (planes[el].points[0][2]),
                        float (planes[el].points[1][0]), float (planes[el].points[1][1]), float (planes[el].points[1][2]),

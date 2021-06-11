@@ -34,9 +34,12 @@ public:
   void randomSample(); 
   void eigen2PCL(const Eigen::Vector3d &eig, const Eigen::Vector3d &norm, pcl::PointXYZRGBNormal &pcl, int r, int g, int b);
   void samplePointsInTriangle(TrianglePlaneData & plane);
+  void makePair(const Eigen::Vector3d &norm, const Eigen::Vector3d &new_p);
+  bool strokeCollisionCheck(const Eigen::Vector3d &new_p, const Eigen::Vector3d &result_p);
+  bool setSecondFinger(const Eigen::Vector3d &p, const Eigen::Vector3d &n_p, const Eigen::Vector3d &result_p, const Eigen::Matrix3d &rotmax, Eigen::Vector3d &p_2, Eigen::Vector3d &result_p_2);
   
   pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_sample_cloud_ {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud_ {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
  
 private:
   std::vector <TrianglePlaneData> planes_;

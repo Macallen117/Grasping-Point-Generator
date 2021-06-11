@@ -57,6 +57,7 @@ double calcLinePlaneDistance(
 bool sameSide(const Eigen::Ref<const Eigen::Vector3d>& p1,const Eigen::Ref<const Eigen::Vector3d>& p2, const Eigen::Ref<const Eigen::Vector3d>& a, const Eigen::Ref<const Eigen::Vector3d>& b);
 
 bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TrianglePlaneData& plane);
+bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p, const std::vector <TrianglePlaneData> &triangle_plane);
 
 Eigen::Vector3d orthogonalVector3d(const Eigen::Ref<const Eigen::Vector3d>&  n, const Eigen::Ref<const Eigen::Vector3d>&  v0, double theta);
 Eigen::Vector3d getOrthogonalVector(const Eigen::Ref<const Eigen::Vector3d>&  n);

@@ -7,12 +7,19 @@ struct YAMLConfig
   {
     YAML::Node yamlnode = YAML::LoadFile(file_name);
 
-    Theta1 = yamlnode["Theta1"].as<double> ();
-    Theta2 = yamlnode["Theta2"].as<double> ();
+    Theta_pln = yamlnode["Theta_pln"].as<double> ();
+    Theta_fct = yamlnode["Theta_fct"].as<double> ();
     
     point_generation_method = yamlnode["point_generation_method"].as<std::string>();
-    Distance1 = yamlnode["Distance1"].as<double> ();
-    Distance2 = yamlnode["Distance2"].as<double> ();
+    Distance_bdry = yamlnode["Distance_bdry"].as<double> ();
+    Distance_rnn = yamlnode["Distance_rnn"].as<double> ();
+    
+    H_max = yamlnode["H_max"].as<double> ();
+    Theta_parl = yamlnode["Theta_parl"].as<double> ();
+    N_da = yamlnode["N_da"].as<int> ();
+    
+    Stroke_per_jaw = yamlnode["Stroke_per_jaw"].as<double> ();
+    gripper_fingers_dist = yamlnode["gripper_fingers_dist"].as<double> ();
     
     display_figure = yamlnode["display_figure"].as<bool>();
     display_points = yamlnode["display_points"].as<bool>();
@@ -27,11 +34,18 @@ struct YAMLConfig
   }
  
   std::string point_generation_method;
-  double Theta1;
-  double Theta2;
+  double Theta_pln;
+  double Theta_fct;
 
-  double Distance1;
-  double Distance2;
+  double Distance_bdry;
+  double Distance_rnn;
+  
+  double H_max;
+  double Theta_parl;
+  int N_da;
+  
+  double Stroke_per_jaw;
+  double gripper_fingers_dist;
 
   bool display_figure;
   bool display_points;

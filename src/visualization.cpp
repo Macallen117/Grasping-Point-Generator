@@ -100,8 +100,14 @@ void Visualizer::display_cluster()
   vis2.setBackgroundColor (config_.background_color[0], config_.background_color[1], config_.background_color[2]);
   vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, config_.point_size); 
   //vis2.addPointCloud<pcl::PointXYZRGBNormal> (gpg_.candid_sample_cloud_);
-  vis2.addPointCloudNormals<pcl::PointXYZRGBNormal> (gpg_.candid_sample_cloud_, 1, 0.01,"cloud_normals");
+  
+  vis2.addPointCloudNormals<pcl::PointXYZRGBNormal> (gpg_.candid_sample_cloud_, 1, 0.1,"cloud_normals");
   vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, config_.point_color[0], config_.point_color[1], config_.point_color[2], "cloud_normals");
+  vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "cloud_normals");
+  
+  vis2.addPointCloudNormals<pcl::PointXYZRGBNormal> (gpg_.candid_result_cloud_, 1, 0.1,"cloud_normals_2");
+  vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1, 0, 0, "cloud_normals_2");
+  vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 5, "cloud_normals_2");
   vis2.spin ();
 }
 

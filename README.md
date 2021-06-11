@@ -109,6 +109,16 @@ Whether this part is to be done depends on the results of the evaluation. No nee
 
 ![image](images/paper_Images/antipodal.png)
 
+**some results**
+
+brown ones are the pointed that sampled ramdomly on one facet
+
+red ones are the intersected points of the brown ones
+
+![image](images/Gripper_related/makepair1.png)
+
+![image](images/Gripper_related/makepair2.png)
+
 ## Planning the grasp configuration
 
 **1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs.**
@@ -124,6 +134,24 @@ Whether this part is to be done depends on the results of the evaluation. No nee
 **first collision check:  checks if the stroke of the gripper collides with the object**
 
 **second collision check:  checks if the whole hand (both fingers and palm) collides with the object**
+
+**current progress**
+
+![image](images/Gripper_related/gripper.png)
+
+![image](images/Gripper_related/one pose.png)
+
+with all the found poses we can do the second collision check and stablility check. The remaining poses are the final result.
+
+**future work**
+
+set up simulational environment for grasping path and grasping order
+
+as the poses of the gripper are given, we can use inverse kinematic to calculate grasping path.
+
+![image](images/Gripper_related/application example.png)
+
+
 
 
 

@@ -13,12 +13,12 @@
 bool calcLinePlaneIntersection(
   const TrianglePlaneData& plane, 
   const Eigen::Ref<const Eigen::Vector3d>&  p0, 
-  const Eigen::Ref<const Eigen::Vector3d>&  u, ///< norm of point
+  const Eigen::Ref<const Eigen::Vector3d>&  u, ///< opposite norm of point
   Eigen::Ref<Eigen::Vector3d> p ///< result
   )
 {
   auto n = plane.normal;
-  if(n.dot(u) == 0.0)
+  if(n.dot(u) == 0.0)  //orth fall
   {
     return false;
   }
@@ -95,6 +95,15 @@ bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TriangleP
 
   // Check if point is in triangle
   return (u >= 0) && (v >= 0) && (u + v < 1);
+}
+
+bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p, const std::vector <TrianglePlaneData> &triangle_plane)
+{
+  for (auto & plane : triangle_plane)
+  {
+    if (pointInTriangle(p, plane)) return true;
+  }
+  return false;
 }
 
 Eigen::Vector3d orthogonalVector3d(const Eigen::Ref<const Eigen::Vector3d>& n, const Eigen::Ref<const Eigen::Vector3d>& v0, double theta)

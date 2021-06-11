@@ -95,7 +95,7 @@ bool Mesh_preprocessor::CheckNormal(const Eigen::Vector3d& Points1,const Eigen::
   dot_product = Points1(0) * Points2(0) + Points1(1) * Points2(1) + Points1(2) * Points2(2);
   result = acos (dot_product) * 180.0 / PI;
   //std::cout<<"The degrees:"<<result<<std::endl;
-  if (result < config_.Theta1) return true;
+  if (result < config_.Theta_pln) return true;
   else return false;
 }
 
