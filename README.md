@@ -159,8 +159,8 @@ detect closest point on the object which intersected with the ray <br>
 point on object if distance between the point and closest point smaller than threshold.
 
 
-**first Package:** <br>   
-**C++** <br>  
+**first Package:**<br>   
+**C++**<br>  
 **grasp point pair generation**<br>
 
 **second Package:** <br>  
