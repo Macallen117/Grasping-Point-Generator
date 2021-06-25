@@ -14,6 +14,7 @@ Planning Grasps for Assembly Tasks
    - ROS (ros-*-desktop-full version is required)
    - PCL 1.8 or later
    - Eigen 3.0 or later
+   - Bullet
 
 # 3. Compilation and Execution
 
@@ -152,7 +153,8 @@ the progress to search the second point pair based on the cluster indices
 Because of the number of points it is still very time consuming. <br>
 So I'm now considering finish it with help of Pybullet
 
-**RayTestClosest()**to find closest point on the object<br>
+**RayTestClosest()** 
+detect closest point on the object <br>
 distance between point and closest point
 
 
