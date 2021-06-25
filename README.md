@@ -152,17 +152,13 @@ the progress to search the second point pair based on the cluster indices
 Because of the number of points it is still very time consuming. <br>
 So I'm now considering finish it with help of Pybullet
 
-<font size="7" color="red">**RayTestClosest()**to find closest point on the object</font><br>
+**RayTestClosest()**to find closest point on the object<br>
 distance between point and closest point
 
 
+**first Package:    C++       grasp point generation**<br>
+**second Package:   Python    collision check and path planning**<br>
 
-**first Package:    C++       grasp point generation**
-**second Package:   Python    collision check and path planning**
-
-set up simulational environment for grasping path and grasping order
-
-as the poses of the gripper are given, we can use inverse kinematic to calculate grasping path.
 
 ![image](images/Gripper_related/application example.png)
 
