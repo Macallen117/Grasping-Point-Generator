@@ -12,7 +12,7 @@ Distance_rnn: 0.05  #controls the radius of contact regions
 #planners for two-finger gripper
 H_max: 0 #stability of the planned grasps
 Theta_parl: 0.1 #controls the parallelity of two facets
-N_da: 8 #the number of discretized rotation angles around contact normals
+N_da: 32 #the number of discretized rotation angles around contact normals
 
 Stroke_per_jaw: 40 #mm 
 gripper_fingers_dist: 20

@@ -115,9 +115,9 @@ brown ones are the pointed that sampled ramdomly on one facet
 
 red ones are the intersected points of the brown ones
 
-![image](images/Gripper_related/makepair1.png)
+![image](images/Gripper_related/1 pointpair/makepair1.png)
 
-![image](images/Gripper_related/makepair2.png)
+![image](images/Gripper_related/1 pointpair/makepair2.png)
 
 ## Planning the grasp configuration
 
@@ -141,15 +141,33 @@ red ones are the intersected points of the brown ones
 
 ![image](images/Gripper_related/one pose.png)
 
-with all the found poses we can do the second collision check and stablility check. The remaining poses are the final result.
+![image](images/Gripper_related/2 pointpairs/Aufsatz with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpair/Deckel with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpair/Spule_einfach with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpair/Stift with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpair/Zahnrad with 2 pointpairs.png)
 
-**future work**
+the progress to search the second point pair based on the cluster indices
+
+Because of the number of points it is still very time consuming. 
+So I'm now considering finish it with help of Pybullet
+
+**RayTestClosest()** to find closest point on the object
+
+distance between point and closest point
+
+
+
+**first Package:    C++       grasp point generation**
+**second Package:   Python    collision check and path planning**
 
 set up simulational environment for grasping path and grasping order
 
 as the poses of the gripper are given, we can use inverse kinematic to calculate grasping path.
 
 ![image](images/Gripper_related/application example.png)
+
+
 
 
 

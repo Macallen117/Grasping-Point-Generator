@@ -109,6 +109,7 @@ std::set<int> Mesh_preprocessor::find_neibour(const int& seed_index)
   // open_set: set for expansion
   // closed_set: expanded index will be added
   // selected_set: set of index which fulfills threshold theta1
+  
   // return: neighbour_set: a set of neighbouring triangles
 			
   std::set<int>neighbour_set;
@@ -155,10 +156,12 @@ void Mesh_preprocessor::RegionGrowing()
   // nIndex = number of triangles
   // all_triangles_index_set: set for all the triangles
   // seg_triangles_index_set: segmented triangle set
+  
   // return: clusters: every set in clusters is a cluster of triangles for a given seed triangle
        
   int nIndex = planes_.size();
   int seed_index;
+  int clusterIndex = 0;
   std::vector < Eigen::Vector3d > seed_triangle {3};
   std::set<int>all_triangles_index_set; 
   std::set<int>neibour_triangle_index_set;
@@ -185,8 +188,9 @@ void Mesh_preprocessor::RegionGrowing()
     }
     std::cout<<"all size:"<<all_triangles_index_set.size()<<std::endl;
     std::cout<<"seg size:"<<seg_triangles_index_set.size()<<std::endl;		
-    clusters.insert(neibour_triangle_index_set);
-				
+    clusters.insert(std::pair<int, std::set<int>>(clusterIndex, neibour_triangle_index_set));
+    
+    clusterIndex++;				
     index_difference_set.clear();
     neibour_triangle_index_set.clear();				
   }

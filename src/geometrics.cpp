@@ -1,9 +1,5 @@
 #include "pgfat/geometrics.h"
 
-#include <iostream>
-#include <Eigen/Dense>
-#include <pcl/common/intersections.h>
-#include <vector>
 
 /**
  p0, u: line
@@ -72,7 +68,7 @@ bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TriangleP
   auto b = plane.points[1];
   auto c = plane.points[2];
   
-  if(abs(plane.normal.dot(p-a)) + abs(plane.normal.dot(p-b)) + abs(plane.normal.dot(p-c)) > 1e-6) // not on the plane
+  if(abs(plane.normal.dot(p-a)) + abs(plane.normal.dot(p-b)) + abs(plane.normal.dot(p-c)) > 1e-3) // not on the plane
   {
     return false;
   }
@@ -97,11 +93,14 @@ bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TriangleP
   return (u >= 0) && (v >= 0) && (u + v < 1);
 }
 
-bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p, const std::vector <TrianglePlaneData> &triangle_plane)
-{
-  for (auto & plane : triangle_plane)
+bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p, const std::vector <TrianglePlaneData> &triangle_plane, std::map<int, std::set<int>> clusters, const int &cluster_p)
+{  
+  std::map<int, std::set<int>>::iterator cluster_set = clusters.find(cluster_p);
+  //std::cout<<"cluster num to be checked: "<<cluster_p<<std::endl;
+  for (std::set<int>::iterator vit = cluster_set->second.begin(); vit != cluster_set->second.end(); vit++)  
   {
-    if (pointInTriangle(p, plane)) return true;
+    //std::cout<<"triangle in cluster: "<<*vit<<std::endl;
+    if (pointInTriangle(p, triangle_plane[*vit])) return true;
   }
   return false;
 }

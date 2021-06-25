@@ -8,21 +8,18 @@ message("${CMAKE_INSTALL_PREFIX}/include")
 message("${CMAKE_MODULE_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
+  roscpp 
   std_msgs
 )
-
-find_package(PCL 1.8 REQUIRED)
+find_package(PCL  REQUIRED)
 find_package(Eigen3 REQUIRED)
-#find_package(FCL REQUIRED)
-
-
+find_package(Bullet REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES pgfat
-#  CATKIN_DEPENDS roscpp std_msgs
-#  DEPENDS system_lib
+  LIBRARIES ${PROJECT_NAME}   
+  CATKIN_DEPENDS roscpp std_msgs   
+  #DEPENDS system_lib
 )
 
 include_directories(
@@ -30,6 +27,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
+  ${BULLET_INCLUDE_DIR}
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
@@ -62,14 +60,14 @@ add_dependencies(${PROJECT_NAME}_lib
 target_link_libraries(${PROJECT_NAME}_lib
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
- # fcl
+  ${BULLET_LIBRARIES}
   yaml-cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
-#  fcl
   yaml-cpp
+  ${BULLET_LIBRARIES}
   ${PROJECT_NAME}_lib
 )
 

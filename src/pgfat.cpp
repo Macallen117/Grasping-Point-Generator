@@ -50,8 +50,18 @@ int main(int argc, char** argv)
   gpg.setMesh(triangles);
   vis.setMesh(triangles);
    
-  mpp.RegionGrowing();   
+  mpp.RegionGrowing(); 
   
+  /*
+  std::map<int, std::set<int>> ::iterator it;
+  std::set<int>::iterator vit;
+  it = mpp.clusters.find(3);
+  std::cout<<(*it).first<<"  "<<std::endl;
+  for (vit=(*it).second.begin(); vit!=(*it).second.end();vit++)
+  {
+    std::cout<<*vit<<" "<<std::endl;
+  }
+  */
   gpg.setClusters(mpp.clusters);
   gpg.randomPointGenerate();
        

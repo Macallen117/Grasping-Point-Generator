@@ -69,17 +69,16 @@ void Visualizer::display_cluster()
   
   int clusters_index = 0;
   srand(time(NULL));
-  for (std::set<std::set<int>>::iterator cluster = mpp_.clusters.begin(); cluster != mpp_.clusters.end(); cluster++)
+  for (std::map<int, std::set<int>>::iterator cluster = mpp_.clusters.begin(); cluster != mpp_.clusters.end(); cluster++)
   {
-    clusters_index++;
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();  
     vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();  
     vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
     vtkIdType pid[3];  
     int Num = planes_.size();
    
-    std::set<int>::iterator face_index = (*cluster).begin();
-    while (face_index != (*cluster).end())
+    std::set<int>::iterator face_index = cluster->second.begin();
+    while (face_index != cluster->second.end())
     {
       for ( unsigned int j = 0; j < 3; j++ )
       {     
@@ -91,15 +90,14 @@ void Visualizer::display_cluster()
       face_index++;
     }
  
-    pcl::io::vtk2mesh(polydata,mesh);      // too many mesh added to the same window!!!!!
-    std::string mesh_name(std::to_string(clusters_index));
+    pcl::io::vtk2mesh(polydata,mesh);      // too many mesh added to the same window
+    std::string mesh_name(std::to_string(cluster->first));
     vis2.addPolygonMesh(mesh, mesh_name,0);
     vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, rand() % (N + 1) / (float)(N + 1), rand() % (N + 1) / (float)(N + 1), rand() % (N + 1) / (float)(N + 1), mesh_name);
     vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, mesh_name);                  
   }
   vis2.setBackgroundColor (config_.background_color[0], config_.background_color[1], config_.background_color[2]);
-  vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, config_.point_size); 
-  //vis2.addPointCloud<pcl::PointXYZRGBNormal> (gpg_.candid_sample_cloud_);
+  //vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, config_.point_size); 
   
   vis2.addPointCloudNormals<pcl::PointXYZRGBNormal> (gpg_.candid_sample_cloud_, 1, 0.1,"cloud_normals");
   vis2.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, config_.point_color[0], config_.point_color[1], config_.point_color[2], "cloud_normals");

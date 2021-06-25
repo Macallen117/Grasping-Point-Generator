@@ -11,7 +11,7 @@ void GraspPointGenerator::setMesh(const std::vector <TrianglePlaneData> &triangl
   planes_ = triangle_mesh;	
 }
 
-void GraspPointGenerator::setClusters(const std::set<std::set<int>> &clusters)
+void GraspPointGenerator::setClusters(const std::map<int, std::set<int>> &clusters)
 {
   clusters_ = clusters;
 }
@@ -30,18 +30,28 @@ void GraspPointGenerator::setSampleMethode()
 
 void GraspPointGenerator::randomSample ()
 {
+  // sample point randomly in every cluster we segmented       
+  // The number of points to be sampled is currently equal to the total area of all the triangles in the cluster
+	
+  // totalArea: total area of all the triangles in one cluster
+  // cumulativeAreas: sum of area as we continuing adding area of triangle
+  // Area_index: the current triangle ID to be added
+  // random_point_num: number of randomly sampled points
+ 
+  // alfter sampling, make point pair for every point we sampled using makePair(n, p, it->first) 
+  
   std::default_random_engine generator;
   std::uniform_real_distribution<double> mesh_distribution(0.0,1.0);  
-
-  for (std::set<std::set<int>>::iterator it = clusters_.begin(); it != clusters_.end(); it++) 
+    
+  for (std::map<int, std::set<int>>::iterator it = clusters_.begin(); it != clusters_.end(); it++) 
   {
-    if (  candid_sample_cloud_->points.size() !=0) break;
+    std::cout << "plan grasp data: cluster to be computed now:  " << it->first <<" / "<<clusters_.size()<<std::endl;
     double totalArea = 0;    
     int random_point_num;
     std::vector<double> cumulativeAreas;
     std::vector<int> Area_index;
     
-    for (std::set<int>::iterator vit = (*it).begin(); vit != (*it).end(); vit++) 
+    for (std::set<int>::iterator vit = it->second.begin(); vit != it->second.end(); vit++) 
     {
       totalArea += planes_[*vit].area;
       cumulativeAreas.push_back(totalArea);
@@ -56,31 +66,36 @@ void GraspPointGenerator::randomSample ()
       double r1 = mesh_distribution(generator);  // r1, r2: 0-1
       double r2 = mesh_distribution(generator);
       randPSurface (planes_, Area_index, cumulativeAreas, totalArea, p, n, r, r1, r2); //return p,n
-      makePair(n, p);
-      //std::cout<<"size:"<<candid_sample_cloud_->points.size()<<std::endl; 
-      //std::cout<<"size:"<<candid_result_cloud_->points.size()<<std::endl;
-      if (  candid_sample_cloud_->points.size() !=0) break;   
-    }     
+      makePair(n, p, it->first);  // normal, point, clusterIndex of the point
+    }
+    std::cout << "size of point pair now:  " << candid_sample_cloud_->points.size() / 2 <<std::endl;     
   }     
 }
 
-void GraspPointGenerator::makePair(const Eigen::Vector3d &n_p, const Eigen::Vector3d &p)
+void GraspPointGenerator::makePair(const Eigen::Vector3d &n_p, const Eigen::Vector3d &p, const int &cluster_p)
 {
-  pcl::PointXYZRGBNormal pcl_point_1;
-  pcl::PointXYZRGBNormal pcl_point_2;
-  for (auto & plane : planes_)
+  // firstly find the correspoding point for a given point to make a point pair
+  // and then plan the second point pair in the direction of discreted angle
+   
+  pcl::PointXYZRGBNormal pcl_point;
+  int plane_index = 0;
+  for (auto & plane : planes_)        
   {
     auto & n_result_p = plane.normal;
+
     if ((n_p+n_result_p).norm() < config_.Theta_parl) // opposite dir tolerance
     {
-      Eigen::Vector3d result_p;
       Eigen::Vector3d p_2;
+      Eigen::Vector3d result_p;
       Eigen::Vector3d result_p_2;
-      calcLinePlaneIntersection(plane, p, -n_p, result_p);
-
-      if (!pointInTriangle(result_p, plane)) continue;          
-      if (!strokeCollisionCheck(p, result_p)) continue;   
+      calcLinePlaneIntersection(plane, p, -n_p, result_p);    
      
+      if (!pointInTriangle(result_p, plane)) continue;          
+      if (!strokeCollisionCheck(p, result_p)) continue;  
+      
+      int cluster_result_p;
+      findCluster(plane_index, cluster_result_p); //cluster index of result_p to check if result_p_2 can be found in the same cluster
+                
       Eigen::Vector3d axis = (p - result_p).normalized();
       double theta;
       Eigen::Matrix3d rotmax;
@@ -88,65 +103,103 @@ void GraspPointGenerator::makePair(const Eigen::Vector3d &n_p, const Eigen::Vect
       {
         theta = 360.0 / config_.N_da * i; 
         rotmax = Eigen::AngleAxisd(theta, axis).matrix();
-        if (!setSecondFinger(p, n_p, result_p, rotmax, p_2, result_p_2)) continue;      
-        //if (!handCollisionCheck()) continue;   
-        //add point pair
-     
-        eigen2PCL(p, n_p*15, pcl_point_1, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); //n times 15 for better visualization
-        candid_sample_cloud_->points.push_back(pcl_point_1);
-        candid_sample_cloud_->width++;
+        if (!setSecondFinger(p, n_p, result_p, rotmax, p_2, result_p_2, cluster_p, cluster_result_p)) continue;      // time consuming!!!
+        //if (!handCollisionCheck()) continue;
+           
+        //add point pair    
+        eigen2PCL(p, n_p*15, pcl_point, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); //n times 15 for better visualization
+        addPoint2Cloud(pcl_point, candid_sample_cloud_);
         
-        eigen2PCL(p_2, n_p*15, pcl_point_1, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255);
-        candid_sample_cloud_->points.push_back(pcl_point_1);
-        candid_sample_cloud_->width++;
-       
+        eigen2PCL(p_2, n_p*15, pcl_point, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255);
+        addPoint2Cloud(pcl_point, candid_sample_cloud_);       
                  
-        eigen2PCL(result_p, n_result_p*15, pcl_point_2, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); 
-        candid_result_cloud_->points.push_back(pcl_point_2);
-        candid_result_cloud_->width++;
+        eigen2PCL(result_p, n_result_p*15, pcl_point, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); 
+        addPoint2Cloud(pcl_point, candid_result_cloud_);
         
-        eigen2PCL(result_p_2, n_result_p*15, pcl_point_2, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); 
-        candid_result_cloud_->points.push_back(pcl_point_2);
-        candid_result_cloud_->width++;
+        eigen2PCL(result_p_2, n_result_p*15, pcl_point, config_.point_color[0]*255,config_.point_color[1]*255,config_.point_color[2]*255); 
+        addPoint2Cloud(pcl_point, candid_result_cloud_);
+
         //add graspdata
         
-        //grasp data
       }     
     }
+    plane_index++;
   }
 }
 
 bool GraspPointGenerator::strokeCollisionCheck(const Eigen::Vector3d &p, const Eigen::Vector3d &result_p)
 {
+  // the distance of one point pair must be lower than 2 * stroke per jaw
+  
   auto dist = result_p - p;
   if (abs(dist.norm()) < config_.Stroke_per_jaw * 2) return true;  
   else return false;
 }
 
-bool GraspPointGenerator::setSecondFinger(const Eigen::Vector3d &p, const Eigen::Vector3d &n_p, const Eigen::Vector3d &result_p, const Eigen::Matrix3d &rotmax, Eigen::Vector3d &p_2, Eigen::Vector3d &result_p_2)
-{  
+
+bool GraspPointGenerator::setSecondFinger(const Eigen::Vector3d &p, const Eigen::Vector3d &n_p, const Eigen::Vector3d &result_p, const Eigen::Matrix3d &rotmax, Eigen::Vector3d &p_2, Eigen::Vector3d &result_p_2, const int &cluster_p, const int &cluster_result_p)
+{
+  // p: first point in the point pair
+  // n_p: normal of p
+  // result_p: the second point in the point pair    
+  // cluster_p: cluster index of p
+  // cluster_result_p: cluster index of result_p
+  
+  // orth: find the orthogonal vector of point normal
+  // dir: rotmax * orth for calculating the second point
+  // p_2: first point of the second point pair
+  // result_p_2: second point of the second point pair
+  
+  // and then using pointInObject() to check if p_2 and result_p_2 lie on the surface of object
+          
   Eigen::Vector3d orth = getOrthogonalVector(n_p);  
-  Eigen::Vector3d dir = rotmax * orth;     //dir for calculating the second point
+  Eigen::Vector3d dir = rotmax * orth;     
   p_2 = p + config_.gripper_fingers_dist * dir;
   result_p_2 = result_p + config_.gripper_fingers_dist * dir;
   
-  if ((pointInObject(p_2, planes_))&&(pointInObject(result_p_2, planes_)))  return true;
+  if ((pointInObject(p_2, planes_, clusters_, cluster_p))&&(pointInObject(result_p_2, planes_, clusters_, cluster_result_p)))  
+  {
+    return true; 
+  } 
   return false;
 }
 
 
-void GraspPointGenerator::eigen2PCL(const Eigen::Vector3d &eig, const Eigen::Vector3d &norm, pcl::PointXYZRGBNormal &pcl, int r, int g, int b)
+void GraspPointGenerator::findCluster(const int &plane_index, int &cluster_result_p)
 {
-  pcl.x = eig(0);
-  pcl.y = eig(1);
-  pcl.z = eig(2);
-  pcl.normal_x = norm(0);
-  pcl.normal_y = norm(1);
-  pcl.normal_z = norm(2);
-  pcl.r = r;
-  pcl.g = g;
-  pcl.b = b;
+  //find cluster index given a plane index
+ 
+  for (std::map<int, std::set<int>>::iterator it = clusters_.begin(); it != clusters_.end(); it++) 
+  {
+    bool ret = binary_search(it->second.begin(), it->second.end(), plane_index);
+    if (ret)
+    {
+      cluster_result_p = it->first;
+    }
+  } 
 }
 
 
+void GraspPointGenerator::eigen2PCL(const Eigen::Vector3d &eig, const Eigen::Vector3d &norm, pcl::PointXYZRGBNormal &pcl_point, int r, int g, int b)
+{
+  //transform Eigen::Vector3d point with normal to pcl::PointXYZRGBNormal
+  
+  pcl_point.x = eig(0);
+  pcl_point.y = eig(1);
+  pcl_point.z = eig(2);
+  pcl_point.normal_x = norm(0);
+  pcl_point.normal_y = norm(1);
+  pcl_point.normal_z = norm(2);
+  pcl_point.r = r;
+  pcl_point.g = g;
+  pcl_point.b = b;
+}
+
+void GraspPointGenerator::addPoint2Cloud(const pcl::PointXYZRGBNormal &pcl_point,  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud)
+{
+  //add Point to point cloud
+  
+  cloud->points.push_back(pcl_point);
+  cloud->width++;
+}
 

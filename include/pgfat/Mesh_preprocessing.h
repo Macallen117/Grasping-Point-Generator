@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <map>
 #include <math.h>
 #include <algorithm>
 
@@ -34,7 +35,7 @@ public:
   std::set<int> find_neibour(const int& seed_index); 
   void RegionGrowing();
   
-  std::set<std::set<int>> clusters;
+  std::map<int, std::set<int>> clusters;
 private:
   YAMLConfig config_;
   std::vector <TrianglePlaneData> planes_;
