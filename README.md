@@ -161,11 +161,12 @@ point on object if distance between the point and closest point smaller than thr
 
 **first Package:**<br>   
 **C++**<br>  
-**grasp point pair generation**<br>
+**superimposed segmentation, grasp point pair generation**<br>
 
-**second Package:** <br>  
+
+**second Package:**<br>  
 **Python**<br>
-**plan the second point paircollision check and path planning**<br>
+**plan the second point pair, collision check and path planning**<br>
 
 
 
