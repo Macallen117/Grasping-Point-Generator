@@ -142,18 +142,17 @@ red ones are the intersected points of the brown ones
 ![image](images/Gripper_related/one pose.png)
 
 ![image](images/Gripper_related/2 pointpairs/Aufsatz with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpair/Deckel with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpair/Spule_einfach with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpair/Stift with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpair/Zahnrad with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpairs/Deckel with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpairs/Spule_einfach with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpairs/Stift with 2 pointpairs.png)
+![image](images/Gripper_related/2 pointpairs/Zahnrad with 2 pointpairs.png)
 
 the progress to search the second point pair based on the cluster indices
 
-Because of the number of points it is still very time consuming. 
+Because of the number of points it is still very time consuming. <br>
 So I'm now considering finish it with help of Pybullet
 
-**RayTestClosest()** to find closest point on the object
-
+<font size="7" color="red">**RayTestClosest()**to find closest point on the object</font><br>
 distance between point and closest point
 
 
