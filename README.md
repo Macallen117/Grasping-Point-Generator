@@ -154,16 +154,17 @@ Because of the number of points it is still very time consuming. <br>
 So I'm now considering finish it with help of Pybullet
 
 **RayTestClosest()** 
-detect closest point on the object <br>
-distance between point and closest point
+send out a ray from one point<br>
+detect closest point on the object which intersected with the ray <br>
+point on object if distance between the point and closest point smaller than threshold.
 
 
-**first Package:    C++       grasp point generation**<br>
-**second Package:   Python    collision check and path planning**<br>
-
-
-![image](images/Gripper_related/application example.png)
-
+**first Package:** <br>   
+**C++ ** <br>  
+**grasp point pair generation**<br>
+**second Package:** <br>  
+**Python **<br>
+**plan the second point paircollision check and path planning**<br>
 
 
 
