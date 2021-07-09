@@ -142,31 +142,17 @@ red ones are the intersected points of the brown ones
 
 ![image](images/Gripper_related/one pose.png)
 
-![image](images/Gripper_related/2 pointpairs/Aufsatz with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpairs/Deckel with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpairs/Spule_einfach with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpairs/Stift with 2 pointpairs.png)
-![image](images/Gripper_related/2 pointpairs/Zahnrad with 2 pointpairs.png)
 
-the progress to search the second point pair based on the cluster indices
+![image](images/Gripper_related/1 pointpair/1.png)
 
-Because of the number of points it is still very time consuming. <br>
-So I'm now considering finish it with help of Pybullet
+![image](images/Gripper_related/1 pointpair/2.png)
 
-**RayTestClosest()** 
-send out a ray from one point<br>
-detect closest point on the object which intersected with the ray <br>
-point on object if distance between the point and closest point smaller than threshold.
+![image](images/Gripper_related/1 pointpair/3.png)
 
+![image](images/Gripper_related/1 pointpair/4.png)
 
-**first Package:**<br>   
-**C++**<br>  
-**superimposed segmentation, grasp point pair generation**<br>
+![image](images/Gripper_related/1 pointpair/5.png)
 
-
-**second Package:**<br>  
-**Python**<br>
-**plan the second point pair, collision check and path planning**<br>
 
 
 
