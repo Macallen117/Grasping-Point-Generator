@@ -6,44 +6,36 @@
  plane: plane
  @see http://geomalgorithms.com/a05-_intersect-1.html
 */
-bool calcLinePlaneIntersection(
-  const TrianglePlaneData& plane, 
-  const Eigen::Ref<const Eigen::Vector3d>&  p0, 
-  const Eigen::Ref<const Eigen::Vector3d>&  u, ///< opposite norm of point
-  Eigen::Ref<Eigen::Vector3d> p ///< result
-  )
-{
+bool calcLinePlaneIntersection(const TrianglePlaneData& plane,
+  const Eigen::Ref<const Eigen::Vector3d>& p0,
+  const Eigen::Ref<const Eigen::Vector3d>& u,
+  Eigen::Ref<Eigen::Vector3d> p) {
   auto n = plane.normal;
-  if(n.dot(u) == 0.0)  //orth fall
-  {
+  if (n.dot(u) == 0.0) {  // orth fall
     return false;
   }
   Eigen::Vector3d w = p0 - plane.points[0];
   double s = -n.dot(w) / n.dot(u);
 
   // inverse direction
-  if(s<0)
+  if (s < 0)
     return false;
 
-  p = p0 + s*u;
-
+  p = p0 + s * u;
   return true;
 }
+
 
 /**
  p0, u: line
  plane: plane
  @see http://geomalgorithms.com/a05-_intersect-1.html
 */
-double calcLinePlaneDistance(
-  const TrianglePlaneData& plane, 
-  const Eigen::Ref<const Eigen::Vector3d>&  p0, 
-  const Eigen::Ref<const Eigen::Vector3d>&  u ///< norm of point
-  )
-{
+double calcLinePlaneDistance(const TrianglePlaneData& plane,
+  const Eigen::Ref<const Eigen::Vector3d>&  p0,
+  const Eigen::Ref<const Eigen::Vector3d>&  u) {
   auto n = plane.normal;
-  if(n.dot(u) == 0.0)
-  {
+  if (n.dot(u) == 0.0) {
     return false;
   }
   Eigen::Vector3d w = p0 - plane.points[0];
@@ -52,27 +44,29 @@ double calcLinePlaneDistance(
 }
 
 /// @see: http://blackpawn.com/texts/pointinpoly/default.html
-bool sameSide(const Eigen::Ref<const Eigen::Vector3d>&  p1,const Eigen::Ref<const Eigen::Vector3d>& p2, const Eigen::Ref<const Eigen::Vector3d>& a, const Eigen::Ref<const Eigen::Vector3d>& b)
-{
+bool sameSide(const Eigen::Ref<const Eigen::Vector3d>&  p1,
+  const Eigen::Ref<const Eigen::Vector3d>& p2,
+  const Eigen::Ref<const Eigen::Vector3d>& a,
+  const Eigen::Ref<const Eigen::Vector3d>& b) {
   auto cp1 = (b-a).cross(p1-a);
   auto cp2 = (b-a).cross(p2-a);
-  if (cp1.dot(cp2) >= 0.0) return true;
-  
+  if (cp1.dot(cp2) >= 0.0)
+    return true;
   return false;
 }
 
-bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TrianglePlaneData& plane)
-{
-  
+bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p,
+  const TrianglePlaneData& plane) {
   auto a = plane.points[0];
   auto b = plane.points[1];
   auto c = plane.points[2];
-  
-  if(abs(plane.normal.dot(p-a)) + abs(plane.normal.dot(p-b)) + abs(plane.normal.dot(p-c)) > 1e-3) // not on the plane
-  {
+
+  if (abs(plane.normal.dot(p-a))
+    + abs(plane.normal.dot(p-b))
+    + abs(plane.normal.dot(p-c)) > 1e-3) {  // not on the plane
     return false;
   }
-  // Compute vectors        
+  // Compute vectors
   auto v0 = c - a;
   auto v1 = b - a;
   auto v2 = p - a;
@@ -93,39 +87,40 @@ bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p, const TriangleP
   return (u >= 0) && (v >= 0) && (u + v < 1);
 }
 
-bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p, const std::vector <TrianglePlaneData> &triangle_plane, std::map<int, std::set<int>> clusters, const int &cluster_p)
-{  
+bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p,
+  const std::vector <TrianglePlaneData> &triangle_plane,
+  std::map<int, std::set<int>> clusters,
+  const int &cluster_p) {
   std::map<int, std::set<int>>::iterator cluster_set = clusters.find(cluster_p);
-  //std::cout<<"cluster num to be checked: "<<cluster_p<<std::endl;
-  for (std::set<int>::iterator vit = cluster_set->second.begin(); vit != cluster_set->second.end(); vit++)  
-  {
-    //std::cout<<"triangle in cluster: "<<*vit<<std::endl;
-    if (pointInTriangle(p, triangle_plane[*vit])) return true;
+  // std::cout<<"cluster num to be checked: "<<cluster_p<<std::endl;
+  for (std::set<int>::iterator vit = cluster_set->second.begin();
+    vit != cluster_set->second.end(); vit++) {
+    // std::cout<<"triangle in cluster: "<<*vit<<std::endl;
+    if (pointInTriangle(p, triangle_plane[*vit]))
+      return true;
   }
   return false;
 }
 
-Eigen::Vector3d orthogonalVector3d(const Eigen::Ref<const Eigen::Vector3d>& n, const Eigen::Ref<const Eigen::Vector3d>& v0, double theta)
-{
+Eigen::Vector3d orthogonalVector3d(const Eigen::Ref<const Eigen::Vector3d>& n,
+  const Eigen::Ref<const Eigen::Vector3d>& v0,
+  double theta) {
   Eigen::Vector3d v;
   v.setZero();
-
   v = Eigen::AngleAxisd(theta, n).matrix() * v0;
   return v;
 }
 
 
-Eigen::Vector3d getOrthogonalVector(const Eigen::Ref<const Eigen::Vector3d>& n)
-{
+Eigen::Vector3d getOrthogonalVector(
+  const Eigen::Ref<const Eigen::Vector3d>& n) {
   Eigen::Vector3d v;
 
   int max_index = 0;
   int new_index[3];
   double max = 0;
-  for(int i=0; i<3; i++)
-  {
-    if(abs(n(i)) > max)
-    {
+  for (int i = 0; i < 3; i++) {
+    if (abs(n(i)) > max) {
       max = abs(n(i));
       max_index = i;
     }
@@ -133,10 +128,9 @@ Eigen::Vector3d getOrthogonalVector(const Eigen::Ref<const Eigen::Vector3d>& n)
 
   int loc = 0;
   new_index[2] = max_index;
-  for(int i=0; i<3; i++)
-  {
-    if(i == max_index) continue;
-
+  for (int i = 0; i < 3; i++) {
+    if (i == max_index)
+      continue;
     new_index[loc] = i;
     loc++;
   }
