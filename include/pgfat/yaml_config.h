@@ -22,7 +22,9 @@ struct YAMLConfig
     gripper_fingers_dist = yamlnode["gripper_fingers_dist"].as<double> ();
     
     display_figure = yamlnode["display_figure"].as<bool>();
-    display_points = yamlnode["display_points"].as<bool>();
+    display_figure = yamlnode["display_cluster"].as<bool>();
+    display_sample_points = yamlnode["display_sample_points"].as<bool>();
+    display_result_points = yamlnode["display_result_points"].as<bool>();
     display_grasp = yamlnode["display_grasp"].as<bool>();
         
     attach_coordination = yamlnode["attach_coordination"].as<bool>();
@@ -31,6 +33,9 @@ struct YAMLConfig
     point_color = yamlnode["point_color"].as<std::vector<double> >();
     grasp_color = yamlnode["grasp_color"].as<std::vector<double> >();
     point_size = yamlnode["point_size"].as<int> ();
+    gripper_opacity = yamlnode["gripper_opacity"].as<double> ();
+    gripper_params = yamlnode["gripper_params"].as<std::vector<double> >();
+    gripper_depth_epsilon = yamlnode["gripper_depth_epsilon"].as<double> ();
   }
  
   std::string point_generation_method;
@@ -48,7 +53,9 @@ struct YAMLConfig
   double gripper_fingers_dist;
 
   bool display_figure;
-  bool display_points;
+  bool display_cluster;
+  bool display_sample_points;
+  bool display_result_points;
   bool display_grasp;
   bool attach_coordination;
 
@@ -57,6 +64,10 @@ struct YAMLConfig
   std::vector<double> point_color;
   std::vector<double> grasp_color;
   int point_size;
+  double gripper_opacity;
+  
+  std::vector<double> gripper_params;
+  double gripper_depth_epsilon;
 
 };
 #endif

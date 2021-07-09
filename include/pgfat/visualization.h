@@ -36,7 +36,7 @@
 
 #include "pgfat/geometrics.h"
 #include "pgfat/mesh_sampling.h"
-#include "pgfat/triangle_plane_data.h"
+#include "pgfat/data_structure.h"
 #include "pgfat/yaml_config.h"
 #include "pgfat/grasp_point_generator.h"
 #include "pgfat/Mesh_preprocessing.h"
@@ -53,6 +53,7 @@ public:
   void display_initial(const pcl::PolygonMesh& mesh);
   void display_reconstruct();
   void display_cluster();
+  void display_grasp(const pcl::PolygonMesh& mesh);
   
 private:
   std::vector <TrianglePlaneData> planes_;

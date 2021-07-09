@@ -19,7 +19,7 @@
 #include <pcl/segmentation/region_growing.h>
 
 
-#include "pgfat/triangle_plane_data.h"
+#include "pgfat/data_structure.h"
 #include "pgfat/yaml_config.h"
 
 

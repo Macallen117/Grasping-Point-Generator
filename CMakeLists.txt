@@ -13,7 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
 )
 find_package(PCL  REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(Bullet REQUIRED)
+#find_package(Bullet REQUIRED)
+find_package(FCL REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -27,7 +28,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
-  ${BULLET_INCLUDE_DIR}
+  #${BULLET_INCLUDE_DIR}
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
@@ -60,14 +61,16 @@ add_dependencies(${PROJECT_NAME}_lib
 target_link_libraries(${PROJECT_NAME}_lib
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${BULLET_LIBRARIES}
+  #${BULLET_LIBRARIES}
   yaml-cpp
+  fcl
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
   yaml-cpp
-  ${BULLET_LIBRARIES}
+  fcl
+  #${BULLET_LIBRARIES}
   ${PROJECT_NAME}_lib
 )
 

@@ -36,7 +36,7 @@
  *
  */
 
-#include "pgfat/triangle_plane_data.h"
+#include "pgfat/data_structure.h"
 
 void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,

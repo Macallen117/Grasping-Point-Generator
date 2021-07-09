@@ -34,7 +34,7 @@
 #include <vector>
 #include <map>
 
-#include "pgfat/triangle_plane_data.h"
+#include "pgfat/data_structure.h"
 
 /**
  p0, u: line

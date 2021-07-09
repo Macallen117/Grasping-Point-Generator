@@ -3,49 +3,51 @@
 Theta_pln: 10.0 #controls the planarity of each facet
 Theta_fct: 10.0  #controls overlap of facets
 
-#random sampling
+# random sampling
 point_generation_method: random_sample
-Distance_bdry: 0.5  #controls distance between contacts and facet boundaries
-Distance_rnn: 0.05  #controls the radius of contact regions
+Distance_bdry: 0.5  # controls distance between contacts and facet boundaries
+Distance_rnn: 0.05  # controls the radius of contact regions
 
 
-#planners for two-finger gripper
-H_max: 0 #stability of the planned grasps
-Theta_parl: 0.1 #controls the parallelity of two facets
-N_da: 32 #the number of discretized rotation angles around contact normals
+# planners for two-finger gripper
+H_max: 0 # stability of the planned grasps
+Theta_parl: 0.1 # controls the parallelity of two facets
+N_da: 4 # the number of discretized rotation angles around contact normals
 
-Stroke_per_jaw: 40 #mm 
+Stroke_per_jaw: 40 # mm 
 gripper_fingers_dist: 20
 
 # display part
 display_figure: true
-display_points: true
-display_grasp: false
+display_cluster: true
+display_sample_points: false
+display_result_points: true
+display_grasp: true
 attach_coordination: false
 
 background_color: [1.0, 1.0, 1.0]
-mesh_color: [0.0,0.0,0.0]  #mesh_color: [0.3529,0.1592,0.1608]
+mesh_color: [0.5,1,0.9]
 point_color: [0.8353,0.7686,0.6314]
-grasp_color: [0.3059, 0.4118, 0.102]
+grasp_color: [1, 0.5, 0.33]
 point_size: 15
+gripper_opacity: 0.4
 
 # Gripper parameters
 
+# h: height of the gripper
+# w: width of the gripper
+# l: length of the gripper
+
+# h_f: height of the gripper finger
+# w_f: width of the gripper finger
+# l_f: length of the gripper finger
+
+# d_f: distance of 2 fingers along l
+
+gripper_params: [60, 175, 75, 26, 37, 75, 20]
 
 
-# d: depth of the gripper
-# h: width of the gripper
-# l: total length of the gripper
 
-# x1l: size of bottom gripper (width)
-# y1l: size of bottom gripper (height)
-
-# z2l: size of gripper finger (width)
-# x4l: size of bar of the gripper (length)
-# z4l: size of bar of the gripper (width)
-#                 d      h     l     
-#gripper_params: [0.0135, 0.05, 0.03, 0.01, 0.01, 0.01]
-#gripper_depth_epsilon: 0.0035
 
 
 

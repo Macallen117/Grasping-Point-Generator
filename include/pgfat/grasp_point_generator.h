@@ -17,12 +17,12 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/radius_outlier_removal.h> 
 
-//#include "btBulletDynamicsCommon.h"
 
 #include "pgfat/geometrics.h"
 #include "pgfat/mesh_sampling.h"
-#include "pgfat/triangle_plane_data.h"
+#include "pgfat/data_structure.h"
 #include "pgfat/yaml_config.h"
+#include "pgfat/collision_check_utils.h"
 
 
 class GraspPointGenerator
@@ -34,21 +34,46 @@ public:
   void randomPointGenerate();
   void setSampleMethode();
   void randomSample();  
-  void samplePointsInTriangle(TrianglePlaneData & plane);
-  void makePair(const Eigen::Vector3d &norm, const Eigen::Vector3d &new_p, const int &cluster_p);
+  void makePair(const Eigen::Vector3d &n_p, const Eigen::Vector3d &p);
   bool strokeCollisionCheck(const Eigen::Vector3d &p, const Eigen::Vector3d &result_p);
-  bool setSecondFinger(const Eigen::Vector3d &p, const Eigen::Vector3d &n_p, const Eigen::Vector3d &result_p, const Eigen::Matrix3d &rotmax, Eigen::Vector3d &p_2, Eigen::Vector3d &result_p_2, const int &cluster_p, const int &cluster_result_p);
-  void findCluster(const int &plane_index, int &cluster_result_p);
-  void eigen2PCL(const Eigen::Vector3d &eig, const Eigen::Vector3d &norm, pcl::PointXYZRGBNormal &pcl_point, int r, int g, int b);
-  void addPoint2Cloud(const pcl::PointXYZRGBNormal &pcl_point,  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud);
+  bool setSecondFinger(
+    const Eigen::Vector3d &p,
+    const Eigen::Vector3d &n_p,
+    const Eigen::Vector3d &result_p,
+    const Eigen::Matrix3d &rotmax,
+    Eigen::Vector3d &p_2,
+    Eigen::Vector3d &result_p_2,
+    const int &cluster_p,
+    const int &cluster_result_p);
+  void findCluster(
+    const int &plane_index,
+    int &cluster_result_p);
+  void eigen2PCL(
+    const Eigen::Vector3d &eig,
+    const Eigen::Vector3d &norm,
+    pcl::PointXYZRGBNormal &pcl_point,
+    int r, int g, int b);
+  void addPoint2Cloud(
+    const Eigen::Vector3d &p,
+    const Eigen::Vector3d &n_p,
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud);
   
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_sample_cloud_ {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud_ {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_sample_cloud_ 
+    {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud_ 
+    {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
+  
+  std::vector <GraspData> grasps_;  // All grasp pose candidates
+  std::vector <GraspData> grasp_cand_collision_free_; // All collision free grasp pose candidates
+  std::vector <GraspData> grasp_cand_in_collision_; // All in collision grasp pose candidates
+  CollisionCheck CollisionCheck_;
+  
+  bool collisionCheck(GraspData &grasp);
+  
  
 private:
   std::vector <TrianglePlaneData> planes_;
   std::map<int, std::set<int>> clusters_;
   YAMLConfig config_;
-  
-
+ 
 };
