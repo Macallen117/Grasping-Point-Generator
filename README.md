@@ -14,6 +14,7 @@ Planning Grasps for Assembly Tasks
    - ROS (ros-*-desktop-full version is required)
    - PCL 1.8 or later
    - Eigen 3.0 or later
+   - Bullet
 
 # 3. Compilation and Execution
 
@@ -152,20 +153,20 @@ the progress to search the second point pair based on the cluster indices
 Because of the number of points it is still very time consuming. <br>
 So I'm now considering finish it with help of Pybullet
 
-<font size="7" color="red">**RayTestClosest()**to find closest point on the object</font><br>
-distance between point and closest point
+**RayTestClosest()** 
+send out a ray from one point<br>
+detect closest point on the object which intersected with the ray <br>
+point on object if distance between the point and closest point smaller than threshold.
 
 
+**first Package:**<br>   
+**C++**<br>  
+**superimposed segmentation, grasp point pair generation**<br>
 
-**first Package:    C++       grasp point generation**
-**second Package:   Python    collision check and path planning**
 
-set up simulational environment for grasping path and grasping order
-
-as the poses of the gripper are given, we can use inverse kinematic to calculate grasping path.
-
-![image](images/Gripper_related/application example.png)
-
+**second Package:**<br>  
+**Python**<br>
+**plan the second point pair, collision check and path planning**<br>
 
 
 
