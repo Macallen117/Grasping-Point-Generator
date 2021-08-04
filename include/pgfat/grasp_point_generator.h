@@ -2,6 +2,7 @@
 #pragma once
 #include <iostream>
 #include <random>
+#include <algorithm>
 
 #include <Eigen/Dense>
 
@@ -12,10 +13,10 @@
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/common_headers.h>
+#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/filters/conditional_removal.h>
-#include <pcl/filters/radius_outlier_removal.h> 
 
 
 #include "pgfat/geometrics.h"
@@ -34,7 +35,10 @@ public:
   void randomPointGenerate();
   void setSampleMethode();
   void randomSample();  
-  void makePair(const Eigen::Vector3d &n_p, const Eigen::Vector3d &p);
+  void makePair(
+    const Eigen::Vector3d &n_p,
+    const Eigen::Vector3d &p,
+    const std::vector<edge> &bdry);
   bool strokeCollisionCheck(const Eigen::Vector3d &p, const Eigen::Vector3d &result_p);
   bool setSecondFinger(
     const Eigen::Vector3d &p,
@@ -48,11 +52,30 @@ public:
   void findCluster(
     const int &plane_index,
     int &cluster_result_p);
+  void remove_close(
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud,
+    const double &radius);
+  void findbdry(std::vector<int> & Area_index, std::vector<edge> &bdry);
+  void setApproachDir(
+    const Eigen::Vector3d &p,
+    const Eigen::Vector3d &n_p,
+    const std::vector<edge> &bdry,
+    std::vector<Eigen::Vector3d> &Dir);
+  void remove_close2bdry(
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
+    const std::vector<edge> &bdry);
+  bool collisionCheck(GraspData &grasp);  
   void eigen2PCL(
     const Eigen::Vector3d &eig,
     const Eigen::Vector3d &norm,
     pcl::PointXYZRGBNormal &pcl_point,
     int r, int g, int b);
+  void eigen2PCL(
+    const Eigen::Vector3d &eig,
+    pcl::PointXYZRGBNormal &pcl_point,
+    int r, int g, int b);
+  Eigen::Vector3d PCL2eigen(const pcl::PointXYZRGBNormal &pcl);
+  Eigen::Vector3d PCLNormal2eigen(const pcl::PointXYZRGBNormal &pcl);
   void addPoint2Cloud(
     const Eigen::Vector3d &p,
     const Eigen::Vector3d &n_p,
@@ -68,12 +91,13 @@ public:
   std::vector <GraspData> grasp_cand_in_collision_; // All in collision grasp pose candidates
   CollisionCheck CollisionCheck_;
   
-  bool collisionCheck(GraspData &grasp);
+  std::map<int, std::set<int>> clusters_;
+  std::map<int, std::vector<edge>> bdrys_;
   
- 
+    
 private:
   std::vector <TrianglePlaneData> planes_;
-  std::map<int, std::set<int>> clusters_;
+    
   YAMLConfig config_;
  
 };

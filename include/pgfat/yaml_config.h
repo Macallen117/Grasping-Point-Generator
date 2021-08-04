@@ -16,16 +16,20 @@ struct YAMLConfig
     
     H_max = yamlnode["H_max"].as<double> ();
     Theta_parl = yamlnode["Theta_parl"].as<double> ();
+    
+    Approach_boundary = yamlnode["Approach_boundary"].as<bool>();
+    Approach_rotation = yamlnode["Approach_rotation"].as<bool>();
     N_da = yamlnode["N_da"].as<int> ();
     
     Stroke_per_jaw = yamlnode["Stroke_per_jaw"].as<double> ();
     gripper_fingers_dist = yamlnode["gripper_fingers_dist"].as<double> ();
     
     display_figure = yamlnode["display_figure"].as<bool>();
-    display_figure = yamlnode["display_cluster"].as<bool>();
+    display_cluster = yamlnode["display_cluster"].as<bool>();
     display_sample_points = yamlnode["display_sample_points"].as<bool>();
     display_result_points = yamlnode["display_result_points"].as<bool>();
     display_grasp = yamlnode["display_grasp"].as<bool>();
+    display_cluster_boundary = yamlnode["display_cluster_boundary"].as<bool>();
         
     attach_coordination = yamlnode["attach_coordination"].as<bool>();
     background_color = yamlnode["background_color"].as<std::vector<double> >();
@@ -47,6 +51,9 @@ struct YAMLConfig
   
   double H_max;
   double Theta_parl;
+  
+  bool Approach_boundary;
+  bool Approach_rotation;
   int N_da;
   
   double Stroke_per_jaw;
@@ -58,6 +65,7 @@ struct YAMLConfig
   bool display_result_points;
   bool display_grasp;
   bool attach_coordination;
+  bool display_cluster_boundary;
 
   std::vector<double> background_color;
   std::vector<double> mesh_color;

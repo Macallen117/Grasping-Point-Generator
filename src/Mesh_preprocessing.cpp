@@ -189,8 +189,7 @@ void Mesh_preprocessor::RegionGrowing() {
       std::cout << "segmented triangles:"
                 << seg_triangles_index_set.size()
                 << std::endl;
-      clusters.insert(std::pair<int, std::set<int>>
-                     (clusterIndex, neibour_triangle_index_set));
+      clusters.insert(std::pair<int, std::set<int>>(clusterIndex, neibour_triangle_index_set));
       clusterIndex++;
       index_difference_set.clear();
       neibour_triangle_index_set.clear();

@@ -104,16 +104,35 @@ static std::vector<TrianglePlaneData> buildTriangleData(pcl::PolygonMesh & mesh)
                        - Eigen::Vector3d(p3[0], p3[1], p3[2]);
     Eigen::Vector3d v2 = Eigen::Vector3d(p2[0], p2[1], p2[2])
                        - Eigen::Vector3d(p3[0], p3[1], p3[2]);
+    Eigen::Vector3d v3 = Eigen::Vector3d(p1[0], p1[1], p1[2])
+                       - Eigen::Vector3d(p2[0], p2[1], p2[2]);
     Eigen::Vector3d n = v1.cross(v2);
     n.normalize();
     // std::cout << "n: " << n.transpose() << std::endl;
-
+        
     plane_data.points.resize(3);
     plane_data.points[0] = (Eigen::Map<const Eigen::Vector3d>(p1));
     plane_data.points[1] = (Eigen::Map<const Eigen::Vector3d>(p2));
     plane_data.points[2] = (Eigen::Map<const Eigen::Vector3d>(p3));
     plane_data.normal = n;
-
+    plane_data.centroid = (plane_data.points[0] 
+    			  + plane_data.points[1] 
+    			  + plane_data.points[2]) / 3;    
+    plane_data.edges[0] = (std::make_pair(plane_data.points[0], plane_data.points[1]));
+    plane_data.edges[1] = (std::make_pair(plane_data.points[1], plane_data.points[2]));
+    plane_data.edges[2] = (std::make_pair(plane_data.points[0], plane_data.points[2]));
+    
+    double a = (plane_data.edges[0].first - plane_data.edges[0].second).norm();
+    double b = (plane_data.edges[1].first - plane_data.edges[1].second).norm();
+    double c = (plane_data.edges[2].first - plane_data.edges[2].second).norm();
+    
+    double r = a + b + c;
+    for(int i=0; i<3; ++i)
+    {
+      plane_data.incenter(i) = (a * plane_data.points[2](i) 
+                              + b * plane_data.points[1](i) 
+                              + c * plane_data.points[0](i)) / r;
+    }
     triangles.push_back(plane_data);
   }
 

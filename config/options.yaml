@@ -1,28 +1,34 @@
 
 # Mesh Preprocessing
-Theta_pln: 10.0 #controls the planarity of each facet
-Theta_fct: 10.0  #controls overlap of facets
+Theta_pln: 10.0 #controls the planarity of each facet.
+Theta_fct: 10.0  #controls overlap of facets  //not used
 
 # random sampling
 point_generation_method: random_sample
-Distance_bdry: 0.5  # controls distance between contacts and facet boundaries
-Distance_rnn: 0.05  # controls the radius of contact regions
+Distance_bdry: 0.5  # controls distance between contacts and facet boundaries  //not used
+Distance_rnn: 2  # controls the radius of contact regions  e.g. 0.5*2 = 0.25 is the real radius
 
 
 # planners for two-finger gripper
 H_max: 0 # stability of the planned grasps
-Theta_parl: 0.1 # controls the parallelity of two facets
-N_da: 4 # the number of discretized rotation angles around contact normals
+Theta_parl: 0.1 # controls the parallelity of point pair
+
+# set approach direction for two-finger gripper
+Approach_boundary: true # set approach direction based on boundary analysis
+Approach_rotation: false # set approach direction based on discretized rotation angle and axis
+N_da: 5 # rotation angle: N_da angles which equally divided by 360 degrees 
+        # rotation axis: the normalized vector between the point pair.  
 
 Stroke_per_jaw: 40 # mm 
 gripper_fingers_dist: 20
 
 # display part
 display_figure: true
-display_cluster: true
+display_cluster: false
 display_sample_points: false
 display_result_points: true
 display_grasp: true
+display_cluster_boundary: false
 attach_coordination: false
 
 background_color: [1.0, 1.0, 1.0]
@@ -42,9 +48,13 @@ gripper_opacity: 0.4
 # w_f: width of the gripper finger
 # l_f: length of the gripper finger
 
-# d_f: distance of 2 fingers along l
+# h_fp: height of the gripper finger pad
+# w_fp: width of the gripper finger pad
+# l_fp: length of the gripper finger pad
 
-gripper_params: [60, 175, 75, 26, 37, 75, 20]
+# d_f: 2*d_f is the distance between the 2 fingers along w at beginning
+
+gripper_params: [60, 175, 75, 26, 27, 75, 26, 10, 5, 20]
 
 
 

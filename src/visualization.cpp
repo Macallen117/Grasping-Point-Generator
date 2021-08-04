@@ -171,22 +171,24 @@ void Visualizer::display_cluster() {
 
 void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
   pcl::visualization::PCLVisualizer vis3("grasp on mesh");
-  vis3.addPolygonMesh(mesh, "meshes", 0);
-  vis3.setPointCloudRenderingProperties(
-    pcl::visualization::PCL_VISUALIZER_COLOR,
-    config_.mesh_color[0],
-    config_.mesh_color[1],
-    config_.mesh_color[2],
-    "meshes");
-  vis3.setPointCloudRenderingProperties(
-    pcl::visualization::PCL_VISUALIZER_LINE_WIDTH,
-    1,
-    "meshes");
   vis3.setBackgroundColor(
-    config_.background_color[0],
-    config_.background_color[1],
-    config_.background_color[2]);
-
+      config_.background_color[0],
+      config_.background_color[1],
+      config_.background_color[2]);
+  if (config_.display_figure == true) {
+    std::cout<<"add mesh";
+    vis3.addPolygonMesh(mesh, "meshes", 0);
+    vis3.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_COLOR,
+      config_.mesh_color[0],
+      config_.mesh_color[1],
+      config_.mesh_color[2],
+      "meshes");
+    vis3.setPointCloudRenderingProperties(
+      pcl::visualization::PCL_VISUALIZER_LINE_WIDTH,
+      1,
+      "meshes");    
+  }
   if (config_.display_sample_points == true) {
     vis3.addPointCloudNormals<pcl::PointXYZRGBNormal>(
       gpg_.candid_sample_cloud_,
@@ -194,9 +196,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
       "cloud_normals");
     vis3.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_COLOR,
-      config_.point_color[0],
-      config_.point_color[1],
-      config_.point_color[2],
+      1, 0, 0,
       "cloud_normals");
     vis3.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_LINE_WIDTH,
@@ -217,6 +217,31 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
       5,
       "cloud_normals_2");
   }
+  if (config_.display_cluster_boundary == true) {
+    int line_id = 0;
+    //std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
+    //it++;
+    for (std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
+      it != gpg_.bdrys_.end(); it++) {
+      double r = rand() % (N + 1) / static_cast<float>(N + 1); 
+      double g = rand() % (N + 1) / static_cast<float>(N + 1);
+      double b = rand() % (N + 1) / static_cast<float>(N + 1);    
+      for (std::vector<edge>::iterator vit = it->second.begin();
+      vit != it->second.end(); vit++) {       
+        pcl::PointXYZRGBNormal p1, p2;
+        gpg_.eigen2PCL(vit->first, p1, 255,0,0);
+        gpg_.eigen2PCL(vit->second, p2, 255,0,0);      
+        vis3.addLine(
+          p1,p2,
+          r, g, b,
+          std::string("line") + std::to_string(line_id));
+        vis3.setShapeRenderingProperties(
+          pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 1, 
+          std::string("line") + std::to_string(line_id));
+        line_id++;
+      }
+    }
+  }
   if (config_.display_grasp == true) {
       int id_num = 0;
       for (auto & grasp : gpg_.grasp_cand_collision_free_) {
@@ -229,7 +254,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
           config_.grasp_color[2],
           config_.gripper_opacity,
           grasp.getDist()/2);
-        // if (id_num == 3)  break;
+        if (id_num == 3)  break;
       }
   }        
   vis3.spin();

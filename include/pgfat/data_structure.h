@@ -4,15 +4,22 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <set>
+#include <unordered_map>
+#include <functional>
+#include <boost/functional/hash.hpp>
 
+typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> edge;
 
 
 struct TrianglePlaneData {
   Eigen::Vector3d normal;
-  std::vector < Eigen::Vector3d > points {3};
+  std::vector <Eigen::Vector3d> points {3};
+  std::vector <edge> edges {3};
   std::set <int> neighbors;
+  Eigen::Vector3d incenter;
+  Eigen::Vector3d centroid;
   double area;
-
+  
   friend std::ostream & operator << (std::ostream &out, const TrianglePlaneData &d) {
     out << "normal: " << d.normal.transpose() << std::endl
         << "area: " << d.area << std::endl
@@ -46,3 +53,5 @@ struct GraspData {
     return dist;
   }
 };
+
+
