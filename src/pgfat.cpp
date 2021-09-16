@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <ros/package.h>
 
 #include "pgfat/visualization.h"
 #include "pgfat/grasp_point_generator.h"
@@ -15,22 +16,35 @@
 
 
 int main(int argc, char** argv) {
-  if (argc < 3)
+  if (argc < 2)
     return -1;
+  
+  std::string PKG_path = ros::package::getPath("pgfat");
+  
   YAMLConfig config;
   try {
-    config.loadConfig(std::string(argv[1]));
+    config.loadConfig(PKG_path + "/config/options.yaml");
   }
   catch(std::exception &e) {
       ROS_ERROR("Failed to load yaml file");
   }
-
-  std::string file_name(argv[2]);
-
+     
+  
+  std::string object_name(argv[1]);
+  object_name += ".stl";
+  
+  // load the object mesh to be analysed
+  std::string mesh_file = PKG_path + "/meshes/Motor_part/" + object_name;
   pcl::PolygonMesh mesh;
-  pcl::io::loadPolygonFileSTL(file_name, mesh);
+  pcl::io::loadPolygonFileSTL(mesh_file, mesh);
   std::vector<TrianglePlaneData> triangles = buildTriangleData(mesh);
-
+     
+  // load the gripper finger mesh for explicit collision check    
+  std::string gripper_finger_file = PKG_path + "/meshes/gripper_finger.stl";
+  pcl::PolygonMesh gripper_finger_mesh;
+  pcl::io::loadPolygonFileSTL(gripper_finger_file, gripper_finger_mesh);
+  std::vector<TrianglePlaneData> triangles2 = buildTriangleData(gripper_finger_mesh);
+        
   Mesh_preprocessor mpp;
   GraspPointGenerator gpg;
   Visualizer vis;
@@ -40,7 +54,7 @@ int main(int argc, char** argv) {
   vis.setConfig(config);
 
   mpp.setMesh(triangles);
-  gpg.setMesh(triangles);
+  gpg.setMesh(triangles, triangles2);
   vis.setMesh(triangles);
 
   mpp.RegionGrowing();

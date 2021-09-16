@@ -3,6 +3,7 @@
 
 void GraspPointGenerator::setConfig(const YAMLConfig &config) {
   config_ = config;
+  CollisionCheck_.setConfig(config);
   CollisionCheck_.gripper_model_.setParams(
     config_.gripper_params[0],
     config_.gripper_params[1],
@@ -13,13 +14,16 @@ void GraspPointGenerator::setConfig(const YAMLConfig &config) {
     config_.gripper_params[6],
     config_.gripper_params[7],
     config_.gripper_params[8],
-    config_.gripper_params[9]);
+    config_.gripper_params[9],
+    config_.gripper_params[10],
+    config_.gripper_params[11]);
 }
 
 void GraspPointGenerator::setMesh(
-  const std::vector <TrianglePlaneData> &triangle_mesh) {
+  const std::vector <TrianglePlaneData> &triangle_mesh,
+  const std::vector <TrianglePlaneData> &finger_triangle_mesh) {
   planes_ = triangle_mesh;
-  CollisionCheck_.loadMesh(triangle_mesh);
+  CollisionCheck_.loadMesh(triangle_mesh, finger_triangle_mesh);
 }
 
 void GraspPointGenerator::setClusters(
@@ -67,7 +71,7 @@ void GraspPointGenerator::randomSample() {
       cumulativeAreas.push_back(totalArea);
       Area_index.push_back(*vit);
     }
-    //if (totalArea <= 10)  continue; //diascard cluster which has too small total area
+    if (totalArea <= 5)  continue; //diascard cluster which has too small total area
     
     random_point_num = totalArea;
     for (std::size_t i = 0; i < random_point_num; ++i) {
@@ -77,7 +81,7 @@ void GraspPointGenerator::randomSample() {
       double r1 = mesh_distribution(generator);
       double r2 = mesh_distribution(generator);
       randPSurface(planes_, Area_index, cumulativeAreas, totalArea, p, n, r, r1, r2);    
-      addPoint2Cloud(p, n, cloud_);
+      addPoint2Cloud(p, n, config_.point_color, cloud_);
     }
  
     // check if the distance between sampled points greater than threshold 
@@ -93,17 +97,43 @@ void GraspPointGenerator::randomSample() {
       makePair(PCLNormal2eigen(cloud_->points[i]), PCL2eigen(cloud_->points[i]), bdry);
     }
   }
+  
+  std::sort(grasp_cand_collision_free1_.begin(),
+            grasp_cand_collision_free1_.end(),
+            [this](auto l, auto r) {return Areacompare(l, r); });
+  std::sort(grasp_cand_collision_free2_.begin(),
+            grasp_cand_collision_free2_.end(),
+            [this](auto l, auto r) {return Areacompare(l, r); });
+            /*
+  for (auto & grasp : grasp_cand_collision_free1_)
+  {
+    std::cout<<grasp.getContactArea()<<" ";
+  }
+*/
+  
   std::cout << "candid_sample_cloud_ "
             << candid_sample_cloud_->points.size()/2
             << std::endl;
-  std::cout << "candid_result_cloud_ "
-            << candid_result_cloud_->points.size()/2
+  std::cout << "candid_result_cloud1_ "
+            << candid_result_cloud1_->points.size()/2
             << std::endl;
-  std::cout << "grasp_cand_collision_free_ "
-            << grasp_cand_collision_free_.size()
+  std::cout << "candid_result_cloud2_ "
+            << candid_result_cloud2_->points.size()/2
+            << std::endl;
+  std::cout << "grasp_cand_collision_free1_ "
+            << grasp_cand_collision_free1_.size()
+            << std::endl;
+  std::cout << "grasp_cand_collision_free2_ "
+            << grasp_cand_collision_free2_.size()
             << std::endl;
 }
 
+
+bool GraspPointGenerator::Areacompare(GraspData &g1, GraspData &g2) {
+  return g1.getContactArea() > g2.getContactArea();
+}
+  
+  
 void GraspPointGenerator::makePair(
   const Eigen::Vector3d &n_p,
   const Eigen::Vector3d &p,
@@ -128,8 +158,8 @@ void GraspPointGenerator::makePair(
 
       for (auto & dir : Dir) {
         // add this point pair to sampled point cloud
-        addPoint2Cloud(p, n_p, candid_sample_cloud_);
-        addPoint2Cloud(result_p, n_result_p, candid_sample_cloud_);
+        addPoint2Cloud(p, n_p, config_.point_color, candid_sample_cloud_);
+        addPoint2Cloud(result_p, n_result_p, config_.point_color, candid_sample_cloud_);
 
         // create graspdata
         GraspData gd;
@@ -142,12 +172,35 @@ void GraspPointGenerator::makePair(
         grasps_.push_back(gd);
 
         // check collision for every graspdata
-        if (collisionCheck(gd)) {
+        int mode = 1;
+        if (!collisionCheck(gd, mode)) {
           // after collision check add this point pair to result point cloud
-          addPoint2Cloud(gd.points[0], gd.hand_transform.linear().col(2)*5, candid_result_cloud_);
-          addPoint2Cloud(gd.points[1], gd.hand_transform.linear().col(2)*5, candid_result_cloud_);
+          addPoint2Cloud(gd.points[0],
+                         gd.hand_transform.linear().col(2),
+                         config_.point_color,
+                         candid_result_cloud1_);
+          addPoint2Cloud(gd.points[1],
+                        -gd.hand_transform.linear().col(2),
+                         config_.point_color,
+                         candid_result_cloud1_);
           // add collision free graspdata to data set
-          grasp_cand_collision_free_.push_back(gd);
+          grasp_cand_collision_free1_.push_back(gd);
+        } else {
+          grasp_cand_in_collision_.push_back(gd);
+        }
+        mode = 2;
+        if (!collisionCheck(gd, mode)) {
+          // after collision check add this point pair to result point cloud
+          addPoint2Cloud(gd.points[0],
+                         gd.hand_transform.linear().col(2),
+                         config_.point_color,
+                         candid_result_cloud2_);
+          addPoint2Cloud(gd.points[1],
+                        -gd.hand_transform.linear().col(2),
+                         config_.point_color,
+                         candid_result_cloud2_);
+          // add collision free graspdata to data set
+          grasp_cand_collision_free2_.push_back(gd);
         } else {
           grasp_cand_in_collision_.push_back(gd);
         }
@@ -157,7 +210,43 @@ void GraspPointGenerator::makePair(
 }
 
 
+bool GraspPointGenerator::collisionCheck(GraspData &grasp, const int &mode) {
+  if (mode == 1) {
+    // contact position in center   
+    if (grasp.getDist()/2 > 2 * config_.gripper_params[9]) {
+      // distance between two points must be larger than minimum     
+      double totalCost = CollisionCheck_.isCollide(grasp.hand_transform, mode,
+                                                   grasp.getDist()/2.0 - config_.gripper_params[9]);
+      if (totalCost == 0) {
+        grasp.contactArea = 0;
+        return true;
+      } else {
+        grasp.contactArea = totalCost;
+        return false;
+      }
+    } 
+  }
+  
+  if (mode == 2) {   
+    // contact position in 2 finger pads
+    double totalCost = CollisionCheck_.isCollide(grasp.hand_transform, mode,
+                                                 grasp.getDist()/2.0);
+    if (totalCost == 0) {
+      grasp.contactArea = 0;
+      return true;
+    } else {
+      grasp.contactArea = totalCost;
+      return false;
+    }
+  }
+}
+
+
 void GraspPointGenerator::findbdry(std::vector<int> & Area_index, std::vector<edge> &bdry) {
+  // find the border edges of a set of triangles
+  // Area_index: input adjacent triangles
+  // bdry: border edges
+  
   std::vector<edge> visited_edge; 
   std::vector<int> nums (Area_index.size() * 3);  
   int i = 0;  
@@ -196,10 +285,15 @@ void GraspPointGenerator::setApproachDir(
   const Eigen::Vector3d &n_p,
   const std::vector<edge> &bdry,
   std::vector<Eigen::Vector3d> &Dir) {
+  // set possible approach directions with a given grasp point
+  // p and n_p: position and normal direction of grasp point
+  // bdry: border edges of a set of triangles where p lies
+  // Dir: the found approach directions
 
   bool issame1 = false;
   bool issame2 = false;
   if (config_.Approach_boundary == true) {
+    // set approach direction based on rotation based on the border edges
     for (auto & bdry : bdry) {
       Eigen::Vector3d e = (bdry.first - bdry.second).normalized();
       Eigen::Vector3d approach_direction = n_p.cross(e);
@@ -228,6 +322,8 @@ void GraspPointGenerator::setApproachDir(
    
   }
   else if (config_.Approach_rotation == true) {
+    // set approach direction based on rotation
+    
     //Eigen::Vector3d axis = (p - result_p).normalized();
     Eigen::Vector3d axis = n_p;
     Eigen::Vector3d orth = getOrthogonalVector(axis);
@@ -245,14 +341,6 @@ void GraspPointGenerator::setApproachDir(
 }
 
 
-bool GraspPointGenerator::collisionCheck(GraspData &grasp) {
-  if (CollisionCheck_.isCollide(grasp.hand_transform,
-                                grasp.getDist()/2 + 0.001))
-    return true;
-  else
-    return false;
-}
-
 bool GraspPointGenerator::strokeCollisionCheck(
   const Eigen::Vector3d &p,
   const Eigen::Vector3d &result_p) {
@@ -263,6 +351,61 @@ bool GraspPointGenerator::strokeCollisionCheck(
     return true;
   else
     return false;
+}
+
+
+void GraspPointGenerator::findCluster(
+  const int &plane_index,
+  int &cluster_result_p) {
+  // find cluster index given a plane index
+
+  for (std::map<int, std::set<int>>::iterator it = clusters_.begin();
+    it != clusters_.end(); it++) {
+    bool ret = binary_search(it->second.begin(), it->second.end(), plane_index);
+    if (ret) {
+      cluster_result_p = it->first;
+    }
+  }
+}
+    
+     
+void GraspPointGenerator::remove_close(
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
+  const double &radius) {
+  // Neighbors within radius search
+  // ensures that distance between any two points in point cloud does not exceed radius
+    
+  pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> kdtree;
+  kdtree.setInputCloud(cloud_);  
+  pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
+  pcl::ExtractIndices<pcl::PointXYZRGBNormal> extract;  
+  std::set<int> temp;
+
+  for (std::size_t i = 0; i < cloud_->points.size(); ++i) {    
+    std::set<int>::iterator pos = temp.find(i);
+    if (pos != temp.end())
+      continue;      
+    pcl::PointXYZRGBNormal searchPoint = cloud_->points[i];  
+    std::vector<int> pointIdxRadiusSearch;
+    std::vector<float> pointRadiusSquaredDistance;
+    
+    if (kdtree.radiusSearch(searchPoint, radius, 
+        pointIdxRadiusSearch, pointRadiusSquaredDistance) > 1 ) {
+      for (std::size_t j = 1; j < pointIdxRadiusSearch.size(); ++j) {
+        temp.insert(pointIdxRadiusSearch[j]);       
+      } 
+    }    
+  }  
+  for (std::set<int>::iterator it = temp.begin(); it != temp.end(); it++) {
+    inliers->indices.push_back(*it);
+  }
+  //std::cout<<"size of cloud "<<cloud_->points.size()<<std::endl;      
+  extract.setInputCloud(cloud_);
+  extract.setIndices(inliers);
+  extract.setNegative(true);
+  extract.filter(*cloud_);
+  //std::cout<<"size of indices "<<inliers->indices.size()<<std::endl;
+  //std::cout<<"size of cloud now "<<cloud_->points.size()<<std::endl;
 }
 
 
@@ -302,126 +445,43 @@ bool GraspPointGenerator::setSecondFinger(
 }
 
 
-void GraspPointGenerator::findCluster(
-  const int &plane_index,
-  int &cluster_result_p) {
-  // find cluster index given a plane index
-
-  for (std::map<int, std::set<int>>::iterator it = clusters_.begin();
-    it != clusters_.end(); it++) {
-    bool ret = binary_search(it->second.begin(), it->second.end(), plane_index);
-    if (ret) {
-      cluster_result_p = it->first;
-    }
-  }
-}
-    
-     
-void GraspPointGenerator::remove_close(
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
-  const double &radius) {
-  // Neighbors within radius search
-  // ensures no point is closer than radius
-    
-  pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> kdtree;
-  kdtree.setInputCloud(cloud_);  
-  pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  pcl::ExtractIndices<pcl::PointXYZRGBNormal> extract;  
-  std::set<int> temp;
-
-  for (std::size_t i = 0; i < cloud_->points.size(); ++i) {    
-    std::set<int>::iterator pos = temp.find(i);
-    if (pos != temp.end())
-      continue;
-      
-    pcl::PointXYZRGBNormal searchPoint = cloud_->points[i];  
-    std::vector<int> pointIdxRadiusSearch;
-    std::vector<float> pointRadiusSquaredDistance;
-    
-    if (kdtree.radiusSearch(searchPoint, radius, 
-        pointIdxRadiusSearch, pointRadiusSquaredDistance) > 1 ) {
-      for (std::size_t j = 1; j < pointIdxRadiusSearch.size(); ++j) {
-        temp.insert(pointIdxRadiusSearch[j]);       
-      } 
-    }    
-  }
-  
-  for (std::set<int>::iterator it = temp.begin(); it != temp.end(); it++) {
-    inliers->indices.push_back(*it);
-  }
-  //std::cout<<"size of cloud "<<cloud_->points.size()<<std::endl;      
-  extract.setInputCloud(cloud_);
-  extract.setIndices(inliers);
-  extract.setNegative(true);
-  extract.filter(*cloud_);
-  //std::cout<<"size of indices "<<inliers->indices.size()<<std::endl;
-  //std::cout<<"size of cloud now "<<cloud_->points.size()<<std::endl;
-}
-	
-	   
-void GraspPointGenerator::eigen2PCL(
-  const Eigen::Vector3d &eig,
-  const Eigen::Vector3d &norm,
-  pcl::PointXYZRGBNormal &pcl_point,
-  int r, int g, int b) {
-  // transform Eigen::Vector3d point and its normal to pcl::PointXYZRGBNormal
-  pcl_point.x = eig(0);
-  pcl_point.y = eig(1);
-  pcl_point.z = eig(2);
-  pcl_point.normal_x = norm(0);
-  pcl_point.normal_y = norm(1);
-  pcl_point.normal_z = norm(2);
-  pcl_point.r = r;
-  pcl_point.g = g;
-  pcl_point.b = b;
-}
-
-void GraspPointGenerator::eigen2PCL(
-  const Eigen::Vector3d &eig,
-  pcl::PointXYZRGBNormal &pcl_point,
-  int r, int g, int b) {
-  // transform Eigen::Vector3d point to pcl::PointXYZRGBNormal
-  pcl_point.x = eig(0);
-  pcl_point.y = eig(1);
-  pcl_point.z = eig(2);
-  pcl_point.r = r;
-  pcl_point.g = g;
-  pcl_point.b = b;
-}
 
 
-Eigen::Vector3d GraspPointGenerator::PCL2eigen(const pcl::PointXYZRGBNormal &pcl) {
-  // transform point of pcl::PointXYZRGBNormal to Eigen::Vector3d
-  Eigen::Vector3d eig;
-  eig(0) = pcl.x;
-  eig(1) = pcl.y;
-  eig(2) = pcl.z;
-  return eig;
-}
 
 
-Eigen::Vector3d GraspPointGenerator::PCLNormal2eigen(const pcl::PointXYZRGBNormal &pcl) {
-  // transform normal of point of pcl::PointXYZRGBNormal to Eigen::Vector3d
-  Eigen::Vector3d eig;
-  eig(0) = pcl.normal_x;
-  eig(1) = pcl.normal_y;
-  eig(2) = pcl.normal_z;
-  return eig;
-}
 
 
-void GraspPointGenerator::addPoint2Cloud(
-  const Eigen::Vector3d &p,
-  const Eigen::Vector3d &n_p,
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud) {
-  // add Point to point cloud
-  pcl::PointXYZRGBNormal pcl_point;
-  eigen2PCL(p, n_p, pcl_point,
-                    config_.point_color[0]*255,
-                    config_.point_color[1]*255,
-                    config_.point_color[2]*255);
-  cloud->points.push_back(pcl_point);
-  cloud->width++;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -37,6 +37,7 @@
 #include "pgfat/geometrics.h"
 #include "pgfat/mesh_sampling.h"
 #include "pgfat/data_structure.h"
+#include "pgfat/data_transform.h"
 #include "pgfat/yaml_config.h"
 #include "pgfat/grasp_point_generator.h"
 #include "pgfat/Mesh_preprocessing.h"

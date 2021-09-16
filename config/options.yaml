@@ -6,12 +6,16 @@ Theta_fct: 10.0  #controls overlap of facets  //not used
 # random sampling
 point_generation_method: random_sample
 Distance_bdry: 0.5  # controls distance between contacts and facet boundaries  //not used
-Distance_rnn: 2  # controls the radius of contact regions  e.g. 0.5*2 = 0.25 is the real radius
+Distance_rnn: 1  # controls minimal distance between sampled points  e.g. 0.5*2 = 0.25 is the real radius
 
 
 # planners for two-finger gripper
-H_max: 0 # stability of the planned grasps
+H_max: 0 # stability of the planned grasps  //not used
 Theta_parl: 0.1 # controls the parallelity of point pair
+
+simplified_gripper: true 
+explicit_gripper: false
+
 
 # set approach direction for two-finger gripper
 Approach_boundary: true # set approach direction based on boundary analysis
@@ -26,7 +30,7 @@ gripper_fingers_dist: 20
 display_figure: true
 display_cluster: false
 display_sample_points: false
-display_result_points: true
+display_result_points: false
 display_grasp: true
 display_cluster_boundary: false
 attach_coordination: false
@@ -36,25 +40,31 @@ mesh_color: [0.5,1,0.9]
 point_color: [0.8353,0.7686,0.6314]
 grasp_color: [1, 0.5, 0.33]
 point_size: 15
-gripper_opacity: 0.4
+gripper_opacity: 0.6
 
 # Gripper parameters
 
-# h: height of the gripper
-# w: width of the gripper
-# l: length of the gripper
+# h (gripper_params[0]): height of the gripper
+# w (gripper_params[1]): width of the gripper
+# l (gripper_params[2]): length of the gripper
 
-# h_f: height of the gripper finger
-# w_f: width of the gripper finger
-# l_f: length of the gripper finger
+# h_f (gripper_params[3]): height of the gripper finger
+# w_f (gripper_params[4]): width of the gripper finger
+# l_f (gripper_params[5]): length of the gripper finger
 
-# h_fp: height of the gripper finger pad
-# w_fp: width of the gripper finger pad
-# l_fp: length of the gripper finger pad
+# h_fp (gripper_params[6]): height of the gripper finger pad
+# w_fp (gripper_params[7]): width of the gripper finger pad
+# l_fp (gripper_params[8]): length of the gripper finger pad
 
-# d_f: 2*d_f is the distance between the 2 fingers along w at beginning
+# w_dff (gripper_params[9]): width difference on center of finger
 
-gripper_params: [60, 175, 75, 26, 27, 75, 26, 10, 5, 20]
+# d_f (gripper_params[10]): 2*d_f is the distance between the 2 fingers along w at beginning
+
+# box_size (gripper_params[11]): size of the small box added on the finger surface for soft-finger-contact
+
+gripper_params: [60, 175, 75, 
+                 26, 17, 75.6, 
+                 6, 20, 5, 2.4, 20, 0.5]
 
 
 

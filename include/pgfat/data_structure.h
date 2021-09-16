@@ -31,12 +31,11 @@ struct TrianglePlaneData {
   }
 };
 
-
-
 struct GraspData {
   std::vector<Eigen::Vector3d> points;
   Eigen::Isometry3d hand_transform;  // 4x4 Rotation matrix
   double dist;  // distance between p and result_p
+  double contactArea;
 
   friend std::ostream & operator << (std::ostream &out, const GraspData &d) {
     out << "transform: " << std::endl
@@ -47,10 +46,18 @@ struct GraspData {
     }
     return out;
   }
-
+  Eigen::Vector3d getPoint1() {
+    return points[0];
+  }
+  Eigen::Vector3d getPoint2() {
+    return points[1];
+  }
   double getDist() {
     dist = (points[0] - points[1]).norm();
     return dist;
+  }
+  double getContactArea() {
+    return contactArea;
   }
 };
 

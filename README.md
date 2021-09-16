@@ -8,19 +8,21 @@ Planning Grasps for Assembly Tasks
    - Description: This project is currently based on the embodiment of the second paper. Data structure and some functions reused from first paper. 
    - Useful Publication:
      1.  https://ieeexplore.ieee.org/abstract/document/9158930     Github: https://github.com/psh117/fgpg.git
-     2.  https://ieeexplore.ieee.org/document/9170578      
+     2.  https://ieeexplore.ieee.org/document/9170578
 
 # 2. Requirements
    - ROS (ros-*-desktop-full version is required)
    - PCL 1.8 or later
    - Eigen 3.0 or later
-   - Bullet
+
 
 # 3. Compilation and Execution
 
-The first input is : **configurations** which are loaded using config/options.yaml
+**configurations** are wirtten in config/options.yaml
 
-The second input is : **stl model** 
+add the object to be analysed to file folder meshes/Motor_part
+
+and then input the object name
 
 ```sh
 cd ~/Project/src # your ROS workspace
@@ -28,8 +30,10 @@ git clone https://gitlab.ipr.kit.edu/uvxgo/planning-grasps-for-assembly-task.git
 cd ~/Project
 catkin_make
 
-rosrun pgfat pgfat config/options.yaml model.stl  
-rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/meshes/Motor_part/Lager.stl
+rosrun pgfat pgfat model 
+
+// for example. the object name is Lager.stl in Motor_part folder
+rosrun pgfat pgfat Lager  
 ```
 
 # 4. Current work
@@ -56,8 +60,7 @@ rosrun pgfat pgfat ~/Project/src/pgfat/config/options.yaml ~/Project/src/pgfat/m
 ------
 
 **current problem:** 
-the segmentation can be completed in a reasonable time, 20K points about 40 seconds.
-two many clusters to be rendered in the same window (e.g 4000 clusters for mesh model with 20k triangles) 
+the segmentation can be completed in a reasonable time but it's somehow hard to visualize all the clusters if the number of clusters are large because we are going to render them in the same window (e.g 4000 clusters for mesh model with 20k triangles) 
 
 **Proposed Result in the paper:**
 
@@ -97,20 +100,15 @@ two many clusters to be rendered in the same window (e.g 4000 clusters for mesh 
 ![image](images/sampling_effect_visualization/sampling_effect1.png)
 
 **Step 2 : Removing bad samples:** 
-Whether this part is to be done depends on the results of the evaluation. No need if the result is good enough.
-   - near the boundary of facets
-   - close to each other
+
+   - remove the sampled points which are too close than each other for every cluster wrt. the tunable parameter Distance_rnn in options.yaml
+   
+![image](images/sampling_effect_visualization/radius_effect.png)
    
 ## Make Pair for two-finger paraller grippers
 **two-finger parallel grippers needs two contact points with opposite contact normals.**
 
 **finds parallel facets and computes candidate contact pairs by examining the contact points on the parallel facets.**
-
-![image](images/paper_Images/makepair.png)
-
-![image](images/paper_Images/antipodal.png)
-
-**some results**
 
 brown ones are the pointed that sampled ramdomly on one facet
 
@@ -122,9 +120,37 @@ red ones are the intersected points of the brown ones
 
 ## Planning the grasp configuration
 
-**1. finds the possible orientations to attach the parallel gripper to the candidate contact pairs.**
+**1. set simplified model for the gripper**
 
-**2. examines the stability of the planned grasps.**
+The gripper we used in real application:
+
+![image](images/Gripper_related/gripper.png)
+
+The simplified gripper model used for collision check:
+
+![image](images/Gripper_related/gripper_simplified.png)
+
+
+**2. finds the possible orientations to attach the parallel gripper to the candidate contact pairs.**
+
+Approach 1: 
+
+Use the distance vector between two points in this point pair as rotation axis.
+Decompose 360 degrees into discretized rotation angle wrt. the tunable parameter N_da in options.yaml.
+Start with a random vector perpendicular to the normal vector of the point. And Rotate this vector according to the discretized rotation angle.
+
+![image](images/approach_direction/approach1.png)
+
+Approach 2:
+
+find the cluster that grasp point belongs to. And then extract the border edges of the cluster
+Set approach direction perpendicular to all the border edges
+
+![image](images/approach_direction/approach2.png)
+
+
+
+**3. collision check of the planned grasp poses.**
 
 ![image](images/paper_Images/algorithm.png)
 
@@ -138,20 +164,24 @@ red ones are the intersected points of the brown ones
 
 **current progress**
 
-![image](images/Gripper_related/gripper.png)
+The red dot is grasped with four finger faces
+The blue dot is grasped with the groove in the middle of the finger
 
-![image](images/Gripper_related/one pose.png)
+![image](images/collisionCheck_result/Lager_r.png)
+
+![image](images/collisionCheck_result/Spule_einfach_r.png)
+
+![image](images/collisionCheck_result/Zahnrad_r.png)
+
+![image](images/collisionCheck_result/Aufsatz_r.png)
+
+![image](images/collisionCheck_result/Deckel_r.png)
+
+![image](images/collisionCheck_result/Gehaeuse_r.png)
+
+![image](images/collisionCheck_result/Getriebegehaeuse_r.png)
 
 
-![image](images/Gripper_related/1 pointpair/1.png)
-
-![image](images/Gripper_related/1 pointpair/2.png)
-
-![image](images/Gripper_related/1 pointpair/3.png)
-
-![image](images/Gripper_related/1 pointpair/4.png)
-
-![image](images/Gripper_related/1 pointpair/5.png)
 
 
 

@@ -17,6 +17,9 @@ struct YAMLConfig
     H_max = yamlnode["H_max"].as<double> ();
     Theta_parl = yamlnode["Theta_parl"].as<double> ();
     
+    simplified_gripper = yamlnode["simplified_gripper"].as<bool>();
+    explicit_gripper = yamlnode["explicit_gripper"].as<bool>();
+    
     Approach_boundary = yamlnode["Approach_boundary"].as<bool>();
     Approach_rotation = yamlnode["Approach_rotation"].as<bool>();
     N_da = yamlnode["N_da"].as<int> ();
@@ -51,6 +54,9 @@ struct YAMLConfig
   
   double H_max;
   double Theta_parl;
+  
+  bool simplified_gripper;
+  bool explicit_gripper;
   
   bool Approach_boundary;
   bool Approach_rotation;

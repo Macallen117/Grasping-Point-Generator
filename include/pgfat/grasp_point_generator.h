@@ -22,6 +22,7 @@
 #include "pgfat/geometrics.h"
 #include "pgfat/mesh_sampling.h"
 #include "pgfat/data_structure.h"
+#include "pgfat/data_transform.h"
 #include "pgfat/yaml_config.h"
 #include "pgfat/collision_check_utils.h"
 
@@ -30,7 +31,9 @@ class GraspPointGenerator
 {
 public:
   void setConfig(const YAMLConfig &config);
-  void setMesh(const std::vector <TrianglePlaneData> &triangle_mesh);
+  void setMesh(
+    const std::vector <TrianglePlaneData> &triangle_mesh,
+    const std::vector <TrianglePlaneData> &finger_triangle_mesh);
   void setClusters(const std::map<int, std::set<int>> &clusters);
   void randomPointGenerate();
   void setSampleMethode();
@@ -64,40 +67,25 @@ public:
   void remove_close2bdry(
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
     const std::vector<edge> &bdry);
-  bool collisionCheck(GraspData &grasp);  
-  void eigen2PCL(
-    const Eigen::Vector3d &eig,
-    const Eigen::Vector3d &norm,
-    pcl::PointXYZRGBNormal &pcl_point,
-    int r, int g, int b);
-  void eigen2PCL(
-    const Eigen::Vector3d &eig,
-    pcl::PointXYZRGBNormal &pcl_point,
-    int r, int g, int b);
-  Eigen::Vector3d PCL2eigen(const pcl::PointXYZRGBNormal &pcl);
-  Eigen::Vector3d PCLNormal2eigen(const pcl::PointXYZRGBNormal &pcl);
-  void addPoint2Cloud(
-    const Eigen::Vector3d &p,
-    const Eigen::Vector3d &n_p,
-    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud);
-  
+  bool collisionCheck(GraspData &grasp, const int &mode); 
+  bool Areacompare(GraspData &g1, GraspData &g2); 
+
   pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_sample_cloud_ 
     {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud_ 
-    {new pcl::PointCloud<pcl::PointXYZRGBNormal>};
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud1_ 
+    {new pcl::PointCloud<pcl::PointXYZRGBNormal>}; // All collision free grasp points in gripper center
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr candid_result_cloud2_ 
+    {new pcl::PointCloud<pcl::PointXYZRGBNormal>}; // All collision free grasp points on finger pads
   
   std::vector <GraspData> grasps_;  // All grasp pose candidates
-  std::vector <GraspData> grasp_cand_collision_free_; // All collision free grasp pose candidates
+  std::vector <GraspData> grasp_cand_collision_free1_; // All collision free grasp poses in gripper center
+  std::vector <GraspData> grasp_cand_collision_free2_; // All collision free grasp poses on finger pads
   std::vector <GraspData> grasp_cand_in_collision_; // All in collision grasp pose candidates
   CollisionCheck CollisionCheck_;
   
   std::map<int, std::set<int>> clusters_;
   std::map<int, std::vector<edge>> bdrys_;
-  
-    
-private:
-  std::vector <TrianglePlaneData> planes_;
-    
+  std::vector <TrianglePlaneData> planes_;   
   YAMLConfig config_;
  
 };

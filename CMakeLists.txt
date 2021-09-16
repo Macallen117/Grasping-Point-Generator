@@ -8,7 +8,8 @@ message("${CMAKE_INSTALL_PREFIX}/include")
 message("${CMAKE_MODULE_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp 
+  roscpp
+  roslib 
   std_msgs
 )
 find_package(PCL  REQUIRED)
@@ -39,6 +40,7 @@ add_library(${PROJECT_NAME}_lib
   src/mesh_sampling.cpp 
   src/grasp_point_generator.cpp
   src/geometrics.cpp
+  src/data_transform.cpp
   src/Mesh_preprocessing.cpp
   
 )
