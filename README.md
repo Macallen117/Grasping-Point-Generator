@@ -114,9 +114,9 @@ brown ones are the pointed that sampled ramdomly on one facet
 
 red ones are the intersected points of the brown ones
 
-![image](images/Gripper_related/1 pointpair/makepair1.png)
+![image](images/sampling_effect_visualization/makepair1.png)
 
-![image](images/Gripper_related/1 pointpair/makepair2.png)
+![image](images/sampling_effect_visualization/makepair2.png)
 
 ## Planning the grasp configuration
 
