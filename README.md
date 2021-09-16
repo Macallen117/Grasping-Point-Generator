@@ -164,8 +164,11 @@ Set approach direction perpendicular to all the border edges
 
 **current progress**
 
-The red dot is grasped with four finger faces
-The blue dot is grasped with the groove in the middle of the finger
+The red dot is grasped with four finger faces.
+
+The blue dot is grasped with the groove in the middle of the finger.
+
+And then we compute the contact area for all the possible poses and sort them from large to small.
 
 ![image](images/collisionCheck_result/Lager_r.png)
 
