@@ -268,7 +268,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
   }
   if (config_.display_grasp == true) {
       int id_num = 0;
-      /*     
+      ///*     
       for (auto & grasp : gpg_.grasp_cand_collision_free1_) {
         //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
         gpg_.CollisionCheck_.gripper_model_.drawGripper(
@@ -282,8 +282,8 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
           grasp.getDist()/2.0 - config_.gripper_params[9]);
         if (id_num == 1)  break;
       }
-      */
-      ///*
+      //*/
+      /*
       for (auto & grasp : gpg_.grasp_cand_collision_free2_) {
         //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
         gpg_.CollisionCheck_.gripper_model_.drawGripper(
@@ -297,7 +297,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
           grasp.getDist()/2.0);
         if (id_num == 1)  break;
       }
-      // */    
+       */    
       
        /*   
       vtkSmartPointer<vtkPoints> points_ = vtkSmartPointer<vtkPoints>::New();
