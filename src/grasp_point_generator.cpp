@@ -84,10 +84,10 @@ void GraspPointGenerator::randomSample() {
       addPoint2Cloud(p, n, config_.point_color, cloud_);
     }
  
-    // check if the distance between sampled points greater than threshold 
+    // remove sampled points too close to each other
     remove_close(cloud_, config_.Distance_rnn);
-    // check if the distance to border edges of this cluster greater than threshold
-
+    // find the boudary of the cluster where grasp point lied on 
+    // and use the boundaries to set the approach direction
     std::vector<edge> bdry;   
     findbdry(Area_index, bdry);    
     bdrys_.insert(std::pair<int, std::vector<edge>>(it->first, bdry));
@@ -104,26 +104,14 @@ void GraspPointGenerator::randomSample() {
   std::sort(grasp_cand_collision_free2_.begin(),
             grasp_cand_collision_free2_.end(),
             [this](auto l, auto r) {return Areacompare(l, r); });
-            /*
-  for (auto & grasp : grasp_cand_collision_free1_)
-  {
-    std::cout<<grasp.getContactArea()<<" ";
-  }
-*/
   
-  std::cout << "candid_sample_cloud_ "
+  std::cout << "all the sampled grasp points: "
             << candid_sample_cloud_->points.size()/2
             << std::endl;
-  std::cout << "candid_result_cloud1_ "
-            << candid_result_cloud1_->points.size()/2
-            << std::endl;
-  std::cout << "candid_result_cloud2_ "
-            << candid_result_cloud2_->points.size()/2
-            << std::endl;
-  std::cout << "grasp_cand_collision_free1_ "
+  std::cout << "grasp points on the center which are collision free: "
             << grasp_cand_collision_free1_.size()
             << std::endl;
-  std::cout << "grasp_cand_collision_free2_ "
+  std::cout << "grasp points on the finger surfaces which are collision free: "
             << grasp_cand_collision_free2_.size()
             << std::endl;
 }
@@ -216,7 +204,7 @@ bool GraspPointGenerator::collisionCheck(GraspData &grasp, const int &mode) {
     if (grasp.getDist()/2 > 2 * config_.gripper_params[9]) {
       // distance between two points must be larger than minimum     
       double totalCost = CollisionCheck_.isCollide(grasp.hand_transform, mode,
-                                                   grasp.getDist()/2.0 - config_.gripper_params[9]);
+                                                   grasp.getDist()/2.0 - config_.gripper_params[9] + 0.001);
       if (totalCost == 0) {
         grasp.contactArea = 0;
         return true;
@@ -230,7 +218,7 @@ bool GraspPointGenerator::collisionCheck(GraspData &grasp, const int &mode) {
   if (mode == 2) {   
     // contact position in 2 finger pads
     double totalCost = CollisionCheck_.isCollide(grasp.hand_transform, mode,
-                                                 grasp.getDist()/2.0);
+                                                 grasp.getDist()/2.0 + 0.001);
     if (totalCost == 0) {
       grasp.contactArea = 0;
       return true;

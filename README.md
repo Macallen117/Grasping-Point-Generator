@@ -172,9 +172,13 @@ And then we compute the contact area for all the possible poses and sort them fr
 
 ![image](images/collisionCheck_result/Lager_r.png)
 
+![image](images/collisionCheck_result/Gewindeschnecke_r.png)
+
 ![image](images/collisionCheck_result/Spule_einfach_r.png)
 
 ![image](images/collisionCheck_result/Zahnrad_r.png)
+
+![image](images/collisionCheck_result/Stift_r.png)
 
 ![image](images/collisionCheck_result/Aufsatz_r.png)
 
