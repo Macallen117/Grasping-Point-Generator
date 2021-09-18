@@ -32,6 +32,8 @@ display_cluster: false
 display_sample_points: false
 display_result_points: false
 display_grasp: true
+display_OnCenter: false
+display_OnFinger: true
 display_cluster_boundary: false
 attach_coordination: false
 

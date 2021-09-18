@@ -32,6 +32,8 @@ struct YAMLConfig
     display_sample_points = yamlnode["display_sample_points"].as<bool>();
     display_result_points = yamlnode["display_result_points"].as<bool>();
     display_grasp = yamlnode["display_grasp"].as<bool>();
+    display_OnCenter = yamlnode["display_OnCenter"].as<bool>();
+    display_OnFinger = yamlnode["display_OnFinger"].as<bool>();
     display_cluster_boundary = yamlnode["display_cluster_boundary"].as<bool>();
         
     attach_coordination = yamlnode["attach_coordination"].as<bool>();
@@ -70,6 +72,8 @@ struct YAMLConfig
   bool display_sample_points;
   bool display_result_points;
   bool display_grasp;
+  bool display_OnCenter;
+  bool display_OnFinger;
   bool attach_coordination;
   bool display_cluster_boundary;
 

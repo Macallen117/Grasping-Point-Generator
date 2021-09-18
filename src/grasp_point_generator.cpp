@@ -201,7 +201,7 @@ void GraspPointGenerator::makePair(
 bool GraspPointGenerator::collisionCheck(GraspData &grasp, const int &mode) {
   if (mode == 1) {
     // contact position in center   
-    if (grasp.getDist()/2 > 2 * config_.gripper_params[9]) {
+    if (grasp.getDist() > 2 * config_.gripper_params[9]) {
       // distance between two points must be larger than minimum     
       double totalCost = CollisionCheck_.isCollide(grasp.hand_transform, mode,
                                                    grasp.getDist()/2.0 - config_.gripper_params[9] + 0.001);
