@@ -211,7 +211,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
       "cloud_normals");
     vis3.setPointCloudRenderingProperties(
       pcl::visualization::PCL_VISUALIZER_LINE_WIDTH,
-      2,
+      3,
       "cloud_normals");
   }
   if (config_.display_result_points == true) {
@@ -254,7 +254,7 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
       double g = rand() % (N + 1) / static_cast<float>(N + 1);
       double b = rand() % (N + 1) / static_cast<float>(N + 1);    
       for (std::vector<edge>::iterator vit = it->second.begin();
-      vit != it->second.end(); vit++) {       
+        vit != it->second.end(); vit++) {       
         pcl::PointXYZRGBNormal p1, p2;
         eigen2PCL(vit->first, p1, 255,0,0);
         eigen2PCL(vit->second, p2, 255,0,0);      
@@ -267,82 +267,42 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
           std::string("line") + std::to_string(line_id));
         line_id++;
       }
+      break;
     }
   }
   if (config_.display_grasp == true) {
-      int id_num = 0;
-      if (config_.display_OnCenter == true) {     
-        for (auto & grasp : gpg_.grasp_cand_collision_free1_) {
-          //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
-          gpg_.CollisionCheck_.gripper_model_.drawGripper(
-            vis3,
-            grasp.hand_transform,
-            std::to_string(id_num++),
-            config_.grasp_color[0],
-            config_.grasp_color[1],
-            config_.grasp_color[2],
-            config_.gripper_opacity,
-            grasp.getDist()/2.0 - config_.gripper_params[9]);
-          if (id_num == 2)  break;
-        }
-      } else if (config_.display_OnFinger == true) {
-        for (auto & grasp : gpg_.grasp_cand_collision_free2_) {
-          //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
-          gpg_.CollisionCheck_.gripper_model_.drawGripper(
-            vis3,
-            grasp.hand_transform,
-            std::to_string(id_num++),
-            config_.grasp_color[0],
-            config_.grasp_color[1],
-            config_.grasp_color[2],
-            config_.gripper_opacity,
-            grasp.getDist()/2.0);
-          if (id_num == 1)  break;
-        }
-      }    
-      
-       /*   
-      vtkSmartPointer<vtkPoints> points_ = vtkSmartPointer<vtkPoints>::New();
-      vtkSmartPointer<vtkCellArray> cells_ = vtkSmartPointer<vtkCellArray>::New();
-      vtkSmartPointer<vtkPolyData> polydata_ = vtkSmartPointer<vtkPolyData>::New();
-      vtkIdType pid_[3];
-      
-      int k = 0;
-      for (auto & cont : gpg_.CollisionCheck_.contactsVec_) {         
-        for (auto & conta : cont) {         
-          vtkSmartPointer<vtkTriangle> triangle_ = vtkSmartPointer<vtkTriangle>::New();
-          triangle_->GetPointIds()->SetNumberOfIds(3);
-          for (unsigned int j = 0; j < 3; j++ ) {
-            pid_[j] = points_->InsertNextPoint(
-            planes_[conta.b1].points[j][0],
-            planes_[conta.b1].points[j][1],
-            planes_[conta.b1].points[j][2]);
-          }
-          cells_->InsertNextCell(3, pid_);
-          polydata_->SetPoints(points_);
-          polydata_->SetPolys(cells_);                   
-        }
-        k++;
-        if (k == 6) break;        
+    int id_num = 0;
+    if (config_.display_OnCenter == true) {     
+      for (auto & grasp : gpg_.grasp_cand_collision_free1_) {
+        //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
+        gpg_.CollisionCheck_.gripper_model_.drawGripper(
+          vis3,
+          grasp.hand_transform,
+          std::to_string(id_num++),
+          config_.grasp_color[0],
+          config_.grasp_color[1],
+          config_.grasp_color[2],
+          config_.gripper_opacity,
+          grasp.getDist()/2.0 - config_.gripper_params[9]);
+        if (id_num == 5)  break;
+        //break;
       }
-     
-      pcl::PolygonMesh mesh_;     
-      pcl::io::vtk2mesh(polydata_, mesh_);     
-      vis3.addPolygonMesh(mesh_, "meshesre", 0);
-    
-      vis3.setPointCloudRenderingProperties(
-      pcl::visualization::PCL_VISUALIZER_COLOR,
-        config_.mesh_color[0],
-        config_.mesh_color[1],
-        config_.mesh_color[2],
-        "meshesre");
-      vis3.setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_LINE_WIDTH,
-        1,
-        "meshesre");
-      //vis3.spin();
-      */
-
+    } else if (config_.display_OnFinger == true) {
+      for (auto & grasp : gpg_.grasp_cand_collision_free2_) {
+        //std::cout<<"maximum cost: "<<grasp.getContactArea()<<std::endl;
+        gpg_.CollisionCheck_.gripper_model_.drawGripper(
+          vis3,
+          grasp.hand_transform,
+          std::to_string(id_num++),
+          config_.grasp_color[0],
+          config_.grasp_color[1],
+          config_.grasp_color[2],
+          config_.gripper_opacity,
+          grasp.getDist()/2.0);
+        if (id_num == 5)  break;
+        //break;
+      }
+    }    
   }        
   vis3.spin();
 }

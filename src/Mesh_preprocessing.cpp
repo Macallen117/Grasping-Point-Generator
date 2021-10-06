@@ -85,17 +85,20 @@ void Mesh_preprocessor::RegionGrow() {
 bool Mesh_preprocessor::CheckNormal(
   const Eigen::Vector3d& Points1,
   const Eigen::Vector3d& Points2) {
-  double dot_product, result;
+  double dot_product, angle;
   dot_product = Points1(0) * Points2(0)+
                 Points1(1) * Points2(1)+
                 Points1(2) * Points2(2);
-  result = acos(dot_product) * 180.0 / PI;
+  angle = acos(dot_product) * 180.0 / PI;
   // std::cout<<"The degrees:"<<result<<std::endl;
-  if (result < config_.Theta_pln)
+  if (angle < config_.Theta_pln)
     return true;
   else
     return false;
 }
+
+
+
 
 
 std::set<int> Mesh_preprocessor::find_neibour(const int& seed_index) {
@@ -146,6 +149,25 @@ std::set<int> Mesh_preprocessor::find_neibour(const int& seed_index) {
   return neighbour_set;
 }
 
+int Mesh_preprocessor::findSeed(
+  const std::set<int> &seg_seed_index_set,
+  const std::set<int> &all_triangles_index_set) {
+  for (std::set<int>::iterator it = all_triangles_index_set.begin();
+       it != all_triangles_index_set.end(); it++) {
+    for (std::set<int>::iterator vit = seg_seed_index_set.begin();
+         vit != seg_seed_index_set.end(); vit++) {
+      double dot_product, angle;
+      dot_product = planes_[*it].normal(0) * planes_[*vit].normal(0) +
+                    planes_[*it].normal(1) * planes_[*vit].normal(1) +
+                    planes_[*it].normal(2) * planes_[*vit].normal(2);
+      angle = acos(dot_product) * 180.0 / PI;
+      if (angle < config_.Theta_fct)  break; 
+      else if (vit == --seg_seed_index_set.end()) return *it;      
+    }    
+  }
+  return *all_triangles_index_set.begin();
+}
+
 
 void Mesh_preprocessor::RegionGrowing() {
   // RegionGrowing method used to do preprocessing to mesh model
@@ -169,7 +191,9 @@ void Mesh_preprocessor::RegionGrowing() {
     all_triangles_index_set.insert(i);
   }
   while (all_triangles_index_set.size() != 0) {
+    //seed_index = findSeed(seg_seed_index_set, all_triangles_index_set);
     seed_index = *all_triangles_index_set.begin();
+    seg_seed_index_set.insert(seed_index);
     neibour_triangle_index_set = find_neibour(seed_index);
     neibour_triangle_index_set.insert(seed_index);  // one cluster
     set_difference(neibour_triangle_index_set.begin(),

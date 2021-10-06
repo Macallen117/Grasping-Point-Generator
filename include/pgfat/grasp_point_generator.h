@@ -31,9 +31,7 @@ class GraspPointGenerator
 {
 public:
   void setConfig(const YAMLConfig &config);
-  void setMesh(
-    const std::vector <TrianglePlaneData> &triangle_mesh,
-    const std::vector <TrianglePlaneData> &finger_triangle_mesh);
+  void setMesh(const std::vector <TrianglePlaneData> &triangle_mesh);
   void setClusters(const std::map<int, std::set<int>> &clusters);
   void randomPointGenerate();
   void setSampleMethode();
@@ -65,8 +63,9 @@ public:
     const std::vector<edge> &bdry,
     std::vector<Eigen::Vector3d> &Dir);
   void remove_close2bdry(
-    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
-    const std::vector<edge> &bdry);
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud,
+    const std::vector<edge> &bdry,
+    const double &Distance2bdry);
   bool collisionCheck(GraspData &grasp, const int &mode); 
   bool Areacompare(GraspData &g1, GraspData &g2); 
 

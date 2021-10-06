@@ -301,28 +301,7 @@ struct FCLGripper
       vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
         pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, id_total_line, 0);
     }
-
-    /*
-    // small sphere   
-    for (int j=0; j<6; j++) {
-      auto T = gripper_transform * small_t[j];         
-      Eigen::Vector3d position(T.translation());   
-      pcl::PointXYZRGBNormal center;
-      
-      center.x = position(0);
-      center.y = position(1);
-      center.z = position(2);
-
-      std::string id_total = "small_spehre" + id + std::to_string(j);
-      vis.addSphere (center, 2, id_total);
-      vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                      1, 0.1, 0.3, id_total);
-      vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY,
-                                      opacity, id_total, 0);
-    }
-    */
   }
-
 };
 
 
@@ -331,21 +310,17 @@ class CollisionCheck
 public:
   YAMLConfig config_;
   BVHMPtr mesh_model_;
-  BVHMPtr gripper_finger_model_;
   FCLGripper gripper_model_; 
-
   std::vector<std::vector<fcl::Contact >> contactsVec_;
   
   void setConfig(const YAMLConfig &config) {
     config_ = config;
   }  
   void loadMesh(
-    const std::vector <TrianglePlaneData> & mesh,
-    const std::vector <TrianglePlaneData> & gripper_mesh) {
+    const std::vector <TrianglePlaneData> & mesh) {
     std::vector<fcl::Vec3f > points;
     std::vector<fcl::Triangle> triangles;
     mesh_model_ = std::make_shared<BVHM> ();
-    gripper_finger_model_ = std::make_shared<BVHM> ();
 
     for(const auto & tri_plane: mesh){
       fcl::Triangle tri;
@@ -359,24 +334,7 @@ public:
     }
     mesh_model_->beginModel();
     mesh_model_->addSubModel(points, triangles);
-    mesh_model_->endModel();
-    
-    points.clear();
-    triangles.clear();    
-    for(const auto & tri_plane: gripper_mesh){
-      fcl::Triangle tri;
-      for(int i=0; i<3; i++){
-        tri[i] = points.size();
-        points.push_back(fcl::Vec3f(tri_plane.points[i](0), 
-                                    tri_plane.points[i](1), 
-                                    tri_plane.points[i](2)));
-      }
-      triangles.push_back(tri);
-    }
-    gripper_finger_model_->beginModel();
-    gripper_finger_model_->addSubModel(points, triangles);
-    gripper_finger_model_->endModel(); 
-      
+    mesh_model_->endModel();       
   }
   
   std::vector<fcl::Contact>& global_pairs()
@@ -479,106 +437,5 @@ public:
     }
   }
 };
-
-
-
-/*
-struct FCLGripper_explicit
-{
-  BoxPtr g[1];  // one box as the gripper body
-  Eigen::Isometry3d t[3];  // placement for every block to form a gripper
-  
-  double h, w, l, h_f, w_f, l_f, l_fp, d_f;
-  void init() {
-    h = 60;
-    w = 175;
-    l = 75;
-    h_f = 26;
-    w_f = 37;
-    l_f = 70;
-    d_f = 20;
-    l_fp = 5;
-
-    g[0] = std::make_shared<Box>(l,h,w);
-
-    t[0].linear().setIdentity();
-    t[0].translation() << -l_f + l_fp/2- l/2, 0, 0;
-
-    t[1].linear().setIdentity();
-    t[1].translation() << -l_f/2 + l_fp/2, 0, d_f + w_f/2;
-    
-    t[2].linear().setIdentity();
-    t[2].translation() << -l_f/2 + l_fp/2, 0, -d_f - w_f/2;
-
-  } 
-
-
-  void changeWidth(double new_d_f) {
-    t[1].linear().setIdentity();
-    t[1].translation() << -l_f/2 + l_fp/2, 0, new_d_f + w_f/2;
-    
-    t[2].linear().setIdentity();
-    t[2].translation() << -l_f/2 + l_fp/2, 0, -new_d_f - w_f/2;
-  }
-
-  
-  void drawGripper(
-    pcl::visualization::PCLVisualizer & vis, 
-    const Eigen::Isometry3d gripper_transform,
-    const std::string &id,
-    double r, double g_c, double b, double opacity,
-    double dist = -1.0) {
-    if (dist < 0)
-      changeWidth(d_f);
-    else
-      changeWidth(dist);
-    for(int i=0; i<3; i++) {
-      auto T = gripper_transform * t[i];         
-      Eigen::Vector3d position(T.translation()); 
-      Eigen::Quaterniond quat(T.linear());  
-      Eigen::Vector3f posf;
-      Eigen::Quaternionf quatf;
-
-      if ( i == 0 ) {
-        posf = position.cast <float> ();
-        quatf = quat.cast <float> ();
-        std::string id_total = "cube" + id + std::to_string(i);
-        vis.addCube(posf, quatf,
-                    g[i]->side[0],
-                    g[i]->side[1],
-                    g[i]->side[2],
-                    id_total);
-        vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                        0, 1, 0, id_total);
-        vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY,
-                                        opacity, id_total, 0);
-
-        std::string id_total_line = "cube_line" + id + std::to_string(i);
-        vis.addCube(posf, 
-                    quatf,g[i]->side[0],
-                    g[i]->side[1],
-                    g[i]->side[2],
-                    id_total_line);
-        vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                        0, 0, 0, id_total_line);
-        vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY,
-                                        opacity, id_total_line, 0);
-        vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
-          pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, id_total_line, 0);
-      }
-      
-      else {
-        //
-      }
-    }
-  }
-
-};
-*/
-
-
-
-
-
 
 

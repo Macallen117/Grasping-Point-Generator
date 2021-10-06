@@ -11,6 +11,7 @@ struct YAMLConfig
     Theta_fct = yamlnode["Theta_fct"].as<double> ();
     
     point_generation_method = yamlnode["point_generation_method"].as<std::string>();
+    Facet_size = yamlnode["Facet_size"].as<int> ();
     Distance_bdry = yamlnode["Distance_bdry"].as<double> ();
     Distance_rnn = yamlnode["Distance_rnn"].as<double> ();
     
@@ -50,7 +51,8 @@ struct YAMLConfig
   std::string point_generation_method;
   double Theta_pln;
   double Theta_fct;
-
+  
+  int Facet_size;
   double Distance_bdry;
   double Distance_rnn;
   

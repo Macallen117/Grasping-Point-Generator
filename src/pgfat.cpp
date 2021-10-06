@@ -38,12 +38,7 @@ int main(int argc, char** argv) {
   pcl::PolygonMesh mesh;
   pcl::io::loadPolygonFileSTL(mesh_file, mesh);
   std::vector<TrianglePlaneData> triangles = buildTriangleData(mesh);
-     
-  // load the gripper finger mesh for explicit collision check    
-  std::string gripper_finger_file = PKG_path + "/meshes/gripper_finger.stl";
-  pcl::PolygonMesh gripper_finger_mesh;
-  pcl::io::loadPolygonFileSTL(gripper_finger_file, gripper_finger_mesh);
-  std::vector<TrianglePlaneData> triangles2 = buildTriangleData(gripper_finger_mesh);
+
         
   Mesh_preprocessor mpp;
   GraspPointGenerator gpg;
@@ -54,28 +49,16 @@ int main(int argc, char** argv) {
   vis.setConfig(config);
 
   mpp.setMesh(triangles);
-  gpg.setMesh(triangles, triangles2);
+  gpg.setMesh(triangles);
   vis.setMesh(triangles);
 
   mpp.RegionGrowing();
-
-  /*
-  std::map<int, std::set<int>> ::iterator it;
-  std::set<int>::iterator vit;
-  it = mpp.clusters.find(3);
-  std::cout<<(*it).first<<"  "<<std::endl;
-  for (vit=(*it).second.begin(); vit!=(*it).second.end();vit++)
-  {
-    std::cout<<*vit<<" "<<std::endl;
-  }
-  */
   gpg.setClusters(mpp.clusters);
   gpg.randomPointGenerate();
 
   vis.setProperty(mpp, gpg);
-  // vis.display_cluster();
+  //vis.display_cluster();
   vis.display_grasp(mesh);
-
 
   return 0;
 }

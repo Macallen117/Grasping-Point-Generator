@@ -20,10 +20,9 @@ void GraspPointGenerator::setConfig(const YAMLConfig &config) {
 }
 
 void GraspPointGenerator::setMesh(
-  const std::vector <TrianglePlaneData> &triangle_mesh,
-  const std::vector <TrianglePlaneData> &finger_triangle_mesh) {
+  const std::vector <TrianglePlaneData> &triangle_mesh) {
   planes_ = triangle_mesh;
-  CollisionCheck_.loadMesh(triangle_mesh, finger_triangle_mesh);
+  CollisionCheck_.loadMesh(triangle_mesh);
 }
 
 void GraspPointGenerator::setClusters(
@@ -54,7 +53,7 @@ void GraspPointGenerator::randomSample() {
 
   std::default_random_engine generator;
   std::uniform_real_distribution<double> mesh_distribution(0.0, 1.0);
-
+  
   for (std::map<int, std::set<int>>::iterator it = clusters_.begin();
     it != clusters_.end(); it++) {
     std::cout << "cluster now: " << it->first << "/"
@@ -71,7 +70,7 @@ void GraspPointGenerator::randomSample() {
       cumulativeAreas.push_back(totalArea);
       Area_index.push_back(*vit);
     }
-    if (totalArea <= 5)  continue; //diascard cluster which has too small total area
+    if (totalArea <= config_.Facet_size)  continue; //diascard cluster which has too small total area
     
     random_point_num = totalArea;
     for (std::size_t i = 0; i < random_point_num; ++i) {
@@ -91,7 +90,8 @@ void GraspPointGenerator::randomSample() {
     std::vector<edge> bdry;   
     findbdry(Area_index, bdry);    
     bdrys_.insert(std::pair<int, std::vector<edge>>(it->first, bdry));
-       
+    // remove sampled points close to boundaries
+    remove_close2bdry(cloud_, bdry, config_.Distance_bdry);   
     // find point pair for the points remaining
     for (size_t i = 0; i < cloud_->points.size (); ++i) {
       makePair(PCLNormal2eigen(cloud_->points[i]), PCL2eigen(cloud_->points[i]), bdry);
@@ -143,7 +143,7 @@ void GraspPointGenerator::makePair(
         
       std::vector<Eigen::Vector3d> Dir;
       setApproachDir(p, n_p, bdry, Dir);
-
+      
       for (auto & dir : Dir) {
         // add this point pair to sampled point cloud
         addPoint2Cloud(p, n_p, config_.point_color, candid_sample_cloud_);
@@ -192,7 +192,7 @@ void GraspPointGenerator::makePair(
         } else {
           grasp_cand_in_collision_.push_back(gd);
         }
-      }
+      }     
     }
   }
 }
@@ -355,12 +355,31 @@ void GraspPointGenerator::findCluster(
     }
   }
 }
-    
+
+
+void GraspPointGenerator::remove_close2bdry(
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud,
+  const std::vector<edge> &bdry,
+  const double &Distance2bdry) {  
+  // remove points next to boundaries of the cluster
+
+  for (std::size_t i = 0; i < cloud->points.size(); ++i) { 
+    pcl::PointXYZRGBNormal Point = cloud->points[i];
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::iterator index = cloud->begin() + i;
+    for (auto & bdry : bdry) {
+      double dist = distance2LineSegment(PCL2eigen(Point), bdry.first, bdry.second);
+      if (dist < Distance2bdry) {
+        cloud->erase(index);
+        if(i != 0 ) --i;
+        break;
+      }
+    }        
+  }
+}
      
 void GraspPointGenerator::remove_close(
   pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr &cloud_,
   const double &radius) {
-  // Neighbors within radius search
   // ensures that distance between any two points in point cloud does not exceed radius
     
   pcl::KdTreeFLANN<pcl::PointXYZRGBNormal> kdtree;
@@ -431,45 +450,5 @@ bool GraspPointGenerator::setSecondFinger(
   }
   return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

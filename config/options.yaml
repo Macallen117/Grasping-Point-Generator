@@ -1,11 +1,12 @@
 
 # Mesh Preprocessing
-Theta_pln: 10.0 #controls the planarity of each facet.
-Theta_fct: 10.0  #controls overlap of facets  //not used
+Theta_pln: 10.0  # in degree. controls the planarity of each facet.
+Theta_fct: 10.0  # in degree. controls overlap of facets. // not used to save time
 
 # random sampling
 point_generation_method: random_sample
-Distance_bdry: 0.5  # controls distance between contacts and facet boundaries  //not used
+Facet_size: 10 # the facets whose size are lower than this threshold will not be sampled
+Distance_bdry: 0  # controls distance between contacts and facet boundaries  //not used to save time
 Distance_rnn: 1  # controls minimal distance between sampled points  e.g. 0.5*2 = 0.25 is the real radius
 
 
@@ -16,11 +17,10 @@ Theta_parl: 0.1 # controls the parallelity of point pair
 simplified_gripper: true 
 explicit_gripper: false
 
-
 # set approach direction for two-finger gripper
 Approach_boundary: true # set approach direction based on boundary analysis
 Approach_rotation: false # set approach direction based on discretized rotation angle and axis
-N_da: 5 # rotation angle: N_da angles which equally divided by 360 degrees 
+N_da: 4 # rotation angle: N_da angles which equally divided by 360 degrees 
         # rotation axis: the normalized vector between the point pair.  
 
 Stroke_per_jaw: 40 # mm 
@@ -29,9 +29,9 @@ gripper_fingers_dist: 20
 # display part
 display_figure: true
 display_cluster: false
-display_sample_points: false
+display_sample_points: true
 display_result_points: false
-display_grasp: true
+display_grasp: false
 display_OnCenter: false
 display_OnFinger: true
 display_cluster_boundary: false
@@ -66,7 +66,7 @@ gripper_opacity: 0.6
 
 gripper_params: [60, 175, 75, 
                  26, 17, 75.6, 
-                 6, 20, 5, 2.4, 20, 0.5]
+                 6, 20, 5, 2.4, 20, 0.2]
 
 
 

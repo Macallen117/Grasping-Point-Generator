@@ -31,7 +31,10 @@ public:
   void Print_Triangles();
   void RegionGrow();
   bool CheckNormal(const Eigen::Vector3d& Points1,const Eigen::Vector3d& Points2);
-  
+  int findSeed(
+    const std::set<int> &seg_seed_index_set,
+    const std::set<int> &all_triangles_index_set);
+ 
   std::set<int> find_neibour(const int& seed_index); 
   void RegionGrowing();
   

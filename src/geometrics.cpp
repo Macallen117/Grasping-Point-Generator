@@ -1,11 +1,18 @@
 #include "pgfat/geometrics.h"
 
 
-/**
- p0, u: line
- plane: plane
- @see http://geomalgorithms.com/a05-_intersect-1.html
-*/
+double distance2LineSegment(
+  const Eigen::Ref<const Eigen::Vector3d>& A,
+  const Eigen::Ref<const Eigen::Vector3d>& B,
+  const Eigen::Ref<const Eigen::Vector3d>& C) {
+  Eigen::Vector3d d = (C - B) / (C - B).norm();
+  Eigen::Vector3d v = A - B;
+  double t = abs(v.dot(d));
+  Eigen::Vector3d P = B + t * d;
+  return (P - A).norm();
+}
+
+
 bool calcLinePlaneIntersection(const TrianglePlaneData& plane,
   const Eigen::Ref<const Eigen::Vector3d>& p0,
   const Eigen::Ref<const Eigen::Vector3d>& u,
@@ -26,44 +33,17 @@ bool calcLinePlaneIntersection(const TrianglePlaneData& plane,
 }
 
 
-/**
- p0, u: line
- plane: plane
- @see http://geomalgorithms.com/a05-_intersect-1.html
-*/
-double calcLinePlaneDistance(const TrianglePlaneData& plane,
-  const Eigen::Ref<const Eigen::Vector3d>&  p0,
-  const Eigen::Ref<const Eigen::Vector3d>&  u) {
-  auto n = plane.normal;
-  if (n.dot(u) == 0.0) {
-    return false;
-  }
-  Eigen::Vector3d w = p0 - plane.points[0];
-  double s = -n.dot(w) / n.dot(u);
-  return s;
-}
-
-/// @see: http://blackpawn.com/texts/pointinpoly/default.html
-bool sameSide(const Eigen::Ref<const Eigen::Vector3d>&  p1,
-  const Eigen::Ref<const Eigen::Vector3d>& p2,
-  const Eigen::Ref<const Eigen::Vector3d>& a,
-  const Eigen::Ref<const Eigen::Vector3d>& b) {
-  auto cp1 = (b-a).cross(p1-a);
-  auto cp2 = (b-a).cross(p2-a);
-  if (cp1.dot(cp2) >= 0.0)
-    return true;
-  return false;
-}
-
-bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p,
+bool pointInTriangle(
+  const Eigen::Ref<const Eigen::Vector3d>& p,
   const TrianglePlaneData& plane) {
   auto a = plane.points[0];
   auto b = plane.points[1];
   auto c = plane.points[2];
 
+  // check if point p is not on the plane
   if (abs(plane.normal.dot(p-a))
     + abs(plane.normal.dot(p-b))
-    + abs(plane.normal.dot(p-c)) > 1e-3) {  // not on the plane
+    + abs(plane.normal.dot(p-c)) > 1e-3) {  
     return false;
   }
   // Compute vectors
@@ -87,7 +67,8 @@ bool pointInTriangle(const Eigen::Ref<const Eigen::Vector3d>& p,
   return (u >= 0) && (v >= 0) && (u + v < 1);
 }
 
-bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p,
+bool pointInObject(
+  const Eigen::Ref<const Eigen::Vector3d>& p,
   const std::vector <TrianglePlaneData> &triangle_plane,
   std::map<int, std::set<int>> clusters,
   const int &cluster_p) {
@@ -102,7 +83,8 @@ bool pointInObject(const Eigen::Ref<const Eigen::Vector3d>& p,
   return false;
 }
 
-Eigen::Vector3d orthogonalVector3d(const Eigen::Ref<const Eigen::Vector3d>& n,
+Eigen::Vector3d orthogonalVector3d(
+  const Eigen::Ref<const Eigen::Vector3d>& n,
   const Eigen::Ref<const Eigen::Vector3d>& v0,
   double theta) {
   Eigen::Vector3d v;

@@ -1,7 +1,5 @@
 #include "pgfat/data_transform.h"
 
-
-
 void eigen2PCL(
   const Eigen::Vector3d &eig,
   const Eigen::Vector3d &norm,
@@ -33,21 +31,6 @@ void eigen2PCL(
   pcl_point.b = b;
 }
 
-void eigen2Fcl(
-    const Eigen::Isometry3d &eigen_input,
-    fcl::Transform3f &fcl_output) {
-    fcl::Matrix3f rotation;
-    fcl::Vec3f translation;
-
-    auto &rot = eigen_input.linear();
-    auto &trans = eigen_input.translation();
-
-    rotation.setValue(rot(0,0), rot(0,1), rot(0,2),
-                      rot(1,0), rot(1,1), rot(1,2),
-                      rot(2,0), rot(2,1), rot(2,2));
-    translation.setValue(trans(0), trans(1), trans(2));
-    fcl_output.setTransform(rotation,translation);
-}
 
 Eigen::Vector3d PCL2eigen(const pcl::PointXYZRGBNormal &pcl) {
   // transform point of pcl::PointXYZRGBNormal to Eigen::Vector3d
@@ -82,4 +65,20 @@ void addPoint2Cloud(
             point_color[2]*255);
   cloud->points.push_back(pcl_point);
   cloud->width++;
+}
+
+
+void eigen2Fcl(
+    const Eigen::Isometry3d &eigen_input,
+    fcl::Transform3f &fcl_output) {
+    // transform Eigen::Isometry3d to fcl::Transform3f
+    fcl::Matrix3f rotation;
+    fcl::Vec3f translation;
+    auto &rot = eigen_input.linear();
+    auto &trans = eigen_input.translation();
+    rotation.setValue(rot(0,0), rot(0,1), rot(0,2),
+                      rot(1,0), rot(1,1), rot(1,2),
+                      rot(2,0), rot(2,1), rot(2,2));
+    translation.setValue(trans(0), trans(1), trans(2));
+    fcl_output.setTransform(rotation,translation);
 }

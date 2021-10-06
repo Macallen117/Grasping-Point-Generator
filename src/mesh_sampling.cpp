@@ -48,7 +48,7 @@ void randomPointTriangle(
   float b1, float b2, float b3,
   float c1, float c2, float c3,
   float r1, float r2, Eigen::Vector3d& p) {
-  float r1sqr = std::sqrt(r1);  // 0-1值r1的平方根
+  float r1sqr = std::sqrt(r1);  
   float OneMinR1Sqr = (1 - r1sqr);
   float OneMinR2 = (1 - r2);
   a1 *= OneMinR1Sqr;
