@@ -2,21 +2,22 @@
 
 
 double distance2LineSegment(
-  const Eigen::Ref<const Eigen::Vector3d>& A,
-  const Eigen::Ref<const Eigen::Vector3d>& B,
-  const Eigen::Ref<const Eigen::Vector3d>& C) {
+  const Eigen::Vector3d& A,
+  const Eigen::Vector3d& B,
+  const Eigen::Vector3d& C) {
   Eigen::Vector3d d = (C - B) / (C - B).norm();
   Eigen::Vector3d v = A - B;
-  double t = abs(v.dot(d));
+  double t = v.dot(d);
   Eigen::Vector3d P = B + t * d;
   return (P - A).norm();
 }
 
 
-bool calcLinePlaneIntersection(const TrianglePlaneData& plane,
-  const Eigen::Ref<const Eigen::Vector3d>& p0,
-  const Eigen::Ref<const Eigen::Vector3d>& u,
-  Eigen::Ref<Eigen::Vector3d> p) {
+bool calcLinePlaneIntersection(
+  const TrianglePlaneData& plane,
+  const Eigen::Vector3d& p0,
+  const Eigen::Vector3d& u,
+  Eigen::Vector3d& p) {
   auto n = plane.normal;
   if (n.dot(u) == 0.0) {  // orth fall
     return false;
@@ -34,7 +35,7 @@ bool calcLinePlaneIntersection(const TrianglePlaneData& plane,
 
 
 bool pointInTriangle(
-  const Eigen::Ref<const Eigen::Vector3d>& p,
+  const Eigen::Vector3d& p,
   const TrianglePlaneData& plane) {
   auto a = plane.points[0];
   auto b = plane.points[1];
@@ -68,7 +69,7 @@ bool pointInTriangle(
 }
 
 bool pointInObject(
-  const Eigen::Ref<const Eigen::Vector3d>& p,
+  const Eigen::Vector3d& p,
   const std::vector <TrianglePlaneData> &triangle_plane,
   std::map<int, std::set<int>> clusters,
   const int &cluster_p) {
@@ -84,8 +85,8 @@ bool pointInObject(
 }
 
 Eigen::Vector3d orthogonalVector3d(
-  const Eigen::Ref<const Eigen::Vector3d>& n,
-  const Eigen::Ref<const Eigen::Vector3d>& v0,
+  const Eigen::Vector3d& n,
+  const Eigen::Vector3d& v0,
   double theta) {
   Eigen::Vector3d v;
   v.setZero();
@@ -95,7 +96,7 @@ Eigen::Vector3d orthogonalVector3d(
 
 
 Eigen::Vector3d getOrthogonalVector(
-  const Eigen::Ref<const Eigen::Vector3d>& n) {
+  const Eigen::Vector3d& n) {
   Eigen::Vector3d v;
 
   int max_index = 0;

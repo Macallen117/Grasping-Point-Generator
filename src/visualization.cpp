@@ -246,10 +246,10 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
   }
   if (config_.display_cluster_boundary == true) {
     int line_id = 0;
-    //std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
+    std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
     //it++;
-    for (std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
-      it != gpg_.bdrys_.end(); it++) {
+    //for (std::map<int, std::vector<edge>>::iterator it = gpg_.bdrys_.begin();
+    //  it != gpg_.bdrys_.end(); it++) {
       double r = rand() % (N + 1) / static_cast<float>(N + 1); 
       double g = rand() % (N + 1) / static_cast<float>(N + 1);
       double b = rand() % (N + 1) / static_cast<float>(N + 1);    
@@ -267,8 +267,8 @@ void Visualizer::display_grasp(const pcl::PolygonMesh& mesh) {
           std::string("line") + std::to_string(line_id));
         line_id++;
       }
-      break;
-    }
+      //break;
+    //}
   }
   if (config_.display_grasp == true) {
     int id_num = 0;

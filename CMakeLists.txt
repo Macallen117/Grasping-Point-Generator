@@ -12,10 +12,29 @@ find_package(catkin REQUIRED COMPONENTS
   roslib 
   std_msgs
 )
-find_package(PCL  REQUIRED)
+find_package(PCL REQUIRED)
+if (PCL_FOUND)
+  message("pcl found!")
+  include_directories(${PCL_INCLUDE_DIR})
+endif (PCL_FOUND)
+
 find_package(Eigen3 REQUIRED)
-#find_package(Bullet REQUIRED)
-find_package(FCL REQUIRED)
+if (EIGEN3_FOUND)
+  message("eigen found!")
+  include_directories(${EIGEN3_INCLUDE_DIR})
+endif (EIGEN3_FOUND)
+
+set(ENV{PKG_CONFIG_PATH} "$ENV{HOME}/local/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+find_package(PkgConfig)
+pkg_check_modules(pkg_fcl REQUIRED fcl>=0.6.0)
+
+#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+#find_package(FCL REQUIRED)
+#if (FCL_FOUND)
+  #message("fcl found!")
+  #include_directories(${pkg_fcl_INCLUDE_DIRS})
+#endif (FCL_FOUND)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -25,11 +44,8 @@ catkin_package(
 )
 
 include_directories(
- include
+  include
   ${catkin_INCLUDE_DIRS}
-  ${PCL_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIR}
-  #${BULLET_INCLUDE_DIR}
 )
 
 link_directories(${PCL_LIBRARY_DIRS})
@@ -41,8 +57,7 @@ add_library(${PROJECT_NAME}_lib
   src/grasp_point_generator.cpp
   src/geometrics.cpp
   src/data_transform.cpp
-  src/Mesh_preprocessing.cpp
-  
+  src/Mesh_preprocessing.cpp 
 )
 
 add_executable(${PROJECT_NAME} 
@@ -54,7 +69,6 @@ add_dependencies(${PROJECT_NAME}
  ${catkin_EXPORTED_TARGETS}
 )
 
-
 add_dependencies(${PROJECT_NAME}_lib
  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
  ${catkin_EXPORTED_TARGETS}
@@ -63,19 +77,18 @@ add_dependencies(${PROJECT_NAME}_lib
 target_link_libraries(${PROJECT_NAME}_lib
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
-  #${BULLET_LIBRARIES}
+  ${pkg_fcl_LIBRARIES}
+  #fcl
   yaml-cpp
-  fcl
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
+  ${pkg_fcl_LIBRARIES}
+  #fcl
   yaml-cpp
-  fcl
-  #${BULLET_LIBRARIES}
   ${PROJECT_NAME}_lib
 )
-
 
 
 install(DIRECTORY include/${PROJECT_NAME}/

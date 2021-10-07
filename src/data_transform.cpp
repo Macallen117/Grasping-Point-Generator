@@ -70,15 +70,23 @@ void addPoint2Cloud(
 
 void eigen2Fcl(
     const Eigen::Isometry3d &eigen_input,
-    fcl::Transform3f &fcl_output) {
+    fcl::Transform3d &fcl_output) {
     // transform Eigen::Isometry3d to fcl::Transform3f
-    fcl::Matrix3f rotation;
-    fcl::Vec3f translation;
+    fcl::Matrix3d rotation;
+    fcl::Vector3d translation;
     auto &rot = eigen_input.linear();
     auto &trans = eigen_input.translation();
-    rotation.setValue(rot(0,0), rot(0,1), rot(0,2),
-                      rot(1,0), rot(1,1), rot(1,2),
-                      rot(2,0), rot(2,1), rot(2,2));
-    translation.setValue(trans(0), trans(1), trans(2));
-    fcl_output.setTransform(rotation,translation);
+    
+    rotation<<rot(0,0), rot(0,1), rot(0,2),
+              rot(1,0), rot(1,1), rot(1,2),
+              rot(2,0), rot(2,1), rot(2,2);
+    translation<<trans(0), trans(1), trans(2);
+
+    //fcl_output.setTransform(rotation,translation);
+    fcl_output.linear() = rotation;
+    fcl_output.translation() = translation;
+    //std::cout<<fcl_output.linear()(0,0)<<std::endl;
+    //std::cout<<fcl_output.translation()(1)<<std::endl;
 }
+
+

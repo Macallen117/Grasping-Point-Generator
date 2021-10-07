@@ -18,13 +18,15 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <fcl/traversal/traversal_node_bvhs.h>
-#include <fcl/traversal/traversal_node_setup.h>
-#include <fcl/collision_node.h>
-#include <fcl/collision.h>
-#include <fcl/BV/BV.h>
-#include <fcl/BV/OBBRSS.h>
-#include <fcl/shape/geometric_shapes.h>
+//#include <fcl/collision_node.h>
+#include "fcl/narrowphase/detail/traversal/collision_node.h"
+//#include <fcl/collision.h>
+#include "fcl/narrowphase/collision.h"
+#include "fcl/common/types.h"
+#include "fcl/math/bv/OBBRSS.h"
+//#include <fcl/BV/BV.h>
+//#include <fcl/math/bv/OBBRSS.h>
+//#include <fcl/shape/geometric_shapes.h>
 
 
 #include "pgfat/geometrics.h"
@@ -49,7 +51,7 @@ void eigen2PCL(
   
 void eigen2Fcl(
     const Eigen::Isometry3d &eigen_input,
-    fcl::Transform3f &fcl_output);
+    fcl::Transform3d &fcl_output);
 
 
 Eigen::Vector3d PCL2eigen(const pcl::PointXYZRGBNormal &pcl);

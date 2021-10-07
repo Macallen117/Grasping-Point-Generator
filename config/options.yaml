@@ -5,9 +5,9 @@ Theta_fct: 10.0  # in degree. controls overlap of facets. // not used to save ti
 
 # random sampling
 point_generation_method: random_sample
-Facet_size: 10 # the facets whose size are lower than this threshold will not be sampled
+Facet_size: 100 # the facets whose size are lower than this threshold will not be sampled
 Distance_bdry: 0  # controls distance between contacts and facet boundaries  //not used to save time
-Distance_rnn: 1  # controls minimal distance between sampled points  e.g. 0.5*2 = 0.25 is the real radius
+Distance_rnn: 0.5  # controls minimal distance between sampled points  e.g. 0.5*2 = 0.25 is the real radius
 
 
 # planners for two-finger gripper

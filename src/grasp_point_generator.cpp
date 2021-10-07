@@ -81,8 +81,7 @@ void GraspPointGenerator::randomSample() {
       double r2 = mesh_distribution(generator);
       randPSurface(planes_, Area_index, cumulativeAreas, totalArea, p, n, r, r1, r2);    
       addPoint2Cloud(p, n, config_.point_color, cloud_);
-    }
- 
+    }          
     // remove sampled points too close to each other
     remove_close(cloud_, config_.Distance_rnn);
     // find the boudary of the cluster where grasp point lied on 
@@ -450,5 +449,4 @@ bool GraspPointGenerator::setSecondFinger(
   }
   return false;
 }
-
 

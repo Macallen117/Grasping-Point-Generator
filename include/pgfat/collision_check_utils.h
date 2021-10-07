@@ -8,31 +8,38 @@
 #include "pgfat/data_structure.h"
 #include "pgfat/data_transform.h"
 
-#include <fcl/traversal/traversal_node_bvhs.h>
-#include <fcl/traversal/traversal_node_setup.h>
-#include <fcl/collision_node.h>
-#include <fcl/collision.h>
-#include <fcl/collision_data.h>
-#include <fcl/BV/BV.h>
-#include <fcl/BV/OBBRSS.h>
-#include <fcl/shape/geometric_shapes.h>
-#include <fcl/narrowphase/narrowphase.h>
-#include "fcl/distance.h"
-#include "fcl/distance_func_matrix.h"
+#include "fcl/narrowphase/detail/traversal/collision_node.h"
+#include "fcl/narrowphase/collision.h"
+#include "fcl/narrowphase/collision_request.h"
+#include "fcl/narrowphase/collision_request-inl.h"
+#include "fcl/narrowphase/collision_result.h"
+#include "fcl/narrowphase/distance_request.h"
+#include "fcl/narrowphase/distance_result.h"
+#include "fcl/narrowphase/contact.h"
+
+
+#include "fcl/math/bv/OBBRSS.h"
+#include "fcl/math/bv/OBB.h"
+#include "fcl/math/bv/RSS.h"
+#include "fcl/geometry/bvh/BVH_model.h"
+#include "fcl/geometry/shape/box.h"
+#include "fcl/geometry/shape/sphere.h"
+#include "fcl/common/types.h"
+
 #include <pcl/visualization/pcl_visualizer.h>
 
-typedef fcl::OBBRSS BV;
+typedef fcl::OBBRSSd BV;
 typedef fcl::BVHModel<BV> BVHM;
 typedef std::shared_ptr<BVHM> BVHMPtr;
 
-using fcl::Box;
-typedef std::shared_ptr<fcl::Box> BoxPtr;
+using fcl::Boxd;
+typedef std::shared_ptr<fcl::Boxd> BoxPtr;
 
-using fcl::Sphere;
-typedef std::shared_ptr<fcl::Sphere> SpherePtr;
+using fcl::Sphered;
+typedef std::shared_ptr<fcl::Sphered> SpherePtr;
 
-using fcl::CollisionObject;
-typedef std::shared_ptr<fcl::CollisionObject> CollisionObjectPtr;
+//using fcl::CollisionObject<double>;
+//typedef std::shared_ptr<fcl::CollisionObject<double>> CollisionObjectPtr;
 
 typedef pcl::PointXYZRGBNormal PointT;
 typedef pcl::PointCloud<pcl::PointXYZRGBNormal> CloudT;
@@ -83,17 +90,17 @@ struct FCLGripper
     d_f = init_d_f;
     box_size = init_box_size;
 
-    g[0] = std::make_shared<Box>(l, h, w);
-    g[1] = std::make_shared<Box>(l_f, h_f, w_f);
-    g[2] = std::make_shared<Box>(l_f, h_f, w_f);
-    g[3] = std::make_shared<Box>(l_fp, h_fp, w_fp);
-    g[4] = std::make_shared<Box>(l_fp, h_fp, w_fp);
-    g[5] = std::make_shared<Box>(l_fp, h_fp, w_fp);
-    g[6] = std::make_shared<Box>(l_fp, h_fp, w_fp);
-    g[7] = std::make_shared<Box>(l_fp, h_f - 2 * h_fp, w_fp - w_diff);
-    g[8] = std::make_shared<Box>(l_fp, h_f - 2 * h_fp, w_fp - w_diff);
+    g[0] = std::make_shared<fcl::Boxd>(l, h, w);
+    g[1] = std::make_shared<fcl::Boxd>(l_f, h_f, w_f);
+    g[2] = std::make_shared<fcl::Boxd>(l_f, h_f, w_f);
+    g[3] = std::make_shared<fcl::Boxd>(l_fp, h_fp, w_fp);
+    g[4] = std::make_shared<fcl::Boxd>(l_fp, h_fp, w_fp);
+    g[5] = std::make_shared<fcl::Boxd>(l_fp, h_fp, w_fp);
+    g[6] = std::make_shared<fcl::Boxd>(l_fp, h_fp, w_fp);
+    g[7] = std::make_shared<fcl::Boxd>(l_fp, h_f - 2 * h_fp, w_fp - w_diff);
+    g[8] = std::make_shared<fcl::Boxd>(l_fp, h_f - 2 * h_fp, w_fp - w_diff);
     for (int i = 0; i < 6; i++) {
-      small_box[i] = std::make_shared<Box>(l_fp, h_fp, box_size); 
+      small_box[i] = std::make_shared<fcl::Boxd>(l_fp, h_fp, box_size); 
     }
     
 
@@ -145,6 +152,7 @@ struct FCLGripper
   }
 
   void changeWidth(double new_d_f) {
+  
     t[1].linear().setIdentity();
     t[1].translation() << -l_f/2 + l_fp/2, 0, new_d_f + w_f/2 + w_fp;
     
@@ -185,9 +193,8 @@ struct FCLGripper
     small_t[4].translation() << 0, 0, new_d_f + w_diff;
     
     small_t[5].linear().setIdentity();
-    small_t[5].translation() << 0, 0, -new_d_f - w_diff;
+    small_t[5].translation() << 0, 0, -new_d_f - w_diff;    
   }
-
   
   void drawGripper(
     pcl::visualization::PCLVisualizer & vis, 
@@ -199,8 +206,9 @@ struct FCLGripper
       changeWidth(d_f);
     else
       changeWidth(dist);
+         
     for(int i=0; i<3; i++) {
-      auto T = gripper_transform * t[i];         
+      Eigen::Isometry3d T = gripper_transform * t[i];         
       Eigen::Vector3d position(T.translation()); 
       Eigen::Quaterniond quat(T.linear());  
       Eigen::Vector3f posf;
@@ -220,8 +228,8 @@ struct FCLGripper
                                       opacity, id_total, 0);
 
       std::string id_total_line = "cube_line" + id + std::to_string(i);
-      vis.addCube(posf, 
-                  quatf,g[i]->side[0],
+      vis.addCube(posf, quatf,
+                  g[i]->side[0],
                   g[i]->side[1],
                   g[i]->side[2],
                   id_total_line);
@@ -232,7 +240,7 @@ struct FCLGripper
       vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
         pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, id_total_line, 0);
     }
-    
+
     for(int i=3; i<9; i++) {
       auto T = gripper_transform * t[i];         
       Eigen::Vector3d position(T.translation()); 
@@ -266,7 +274,7 @@ struct FCLGripper
       vis.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION,
         pcl::visualization::PCL_VISUALIZER_REPRESENTATION_WIREFRAME, id_total_line, 0);
     }
-    
+
     // small box
     for(int j=0; j<6; j++) {
       auto T = gripper_transform * small_t[j];         
@@ -311,48 +319,51 @@ public:
   YAMLConfig config_;
   BVHMPtr mesh_model_;
   FCLGripper gripper_model_; 
-  std::vector<std::vector<fcl::Contact >> contactsVec_;
+  std::vector<std::vector<fcl::Contact<double>>> contactsVec_;
   
   void setConfig(const YAMLConfig &config) {
     config_ = config;
   }  
   void loadMesh(
     const std::vector <TrianglePlaneData> & mesh) {
-    std::vector<fcl::Vec3f > points;
+    std::vector<fcl::Vector3d > points;
     std::vector<fcl::Triangle> triangles;
+
     mesh_model_ = std::make_shared<BVHM> ();
 
     for(const auto & tri_plane: mesh){
       fcl::Triangle tri;
       for(int i=0; i<3; i++){
         tri[i] = points.size();
-        points.push_back(fcl::Vec3f(tri_plane.points[i](0), 
-                                    tri_plane.points[i](1), 
-                                    tri_plane.points[i](2)));
+        points.push_back(fcl::Vector3d(tri_plane.points[i](0), 
+                                       tri_plane.points[i](1), 
+                                       tri_plane.points[i](2)));
       }
       triangles.push_back(tri);
     }
     mesh_model_->beginModel();
     mesh_model_->addSubModel(points, triangles);
-    mesh_model_->endModel();       
+    mesh_model_->endModel();     
   }
   
-  std::vector<fcl::Contact>& global_pairs()
+  std::vector<fcl::Contact<double>>& global_pairs()
   {
-    static std::vector<fcl::Contact> static_global_pairs;
+    static std::vector<fcl::Contact<double>> static_global_pairs;
     return static_global_pairs;
   }
 
   double isCollide(Eigen::Isometry3d gripper_transform, int mode, double distance) {         
-    fcl::CollisionRequest collisionRequest;            
+    fcl::CollisionRequest<double> collisionRequest;            
     if (config_.simplified_gripper == true) {
-      fcl::CollisionResult collisionResult[9];       
-      fcl::Transform3f init;
+      fcl::CollisionResult<double> collisionResult[9];       
+      fcl::Transform3d init;
       init.setIdentity();         
       gripper_model_.changeWidth(distance);
       for (int i=0; i<9 ;++i) {
         Eigen::Isometry3d cur_transform = gripper_transform * gripper_model_.t[i];
-        fcl::Transform3f fcl_transform;
+        //fcl::Transform3d fcl_transform(cur_transform);
+        //fcl::Transform3d fcl_transform = cur_transform.cast<double>();
+        fcl::Transform3d fcl_transform;
         eigen2Fcl(cur_transform, fcl_transform);
         fcl::collide(mesh_model_.get(), init,
                      gripper_model_.g[i].get(), fcl_transform,
@@ -374,22 +385,28 @@ public:
         */      
       }    
     }
-    
-    fcl::CollisionRequest collisionRequest_intersect;
-    collisionRequest_intersect.num_max_contacts = std::numeric_limits<int>::max(); 
-    collisionRequest_intersect.enable_contact = true;
-    collisionRequest_intersect.enable_cost = true;
-    collisionRequest_intersect.use_approximate_cost = true;
-    fcl::Transform3f init;
+      
+    static const int num_max_contacts = std::numeric_limits<int>::max();
+    static const bool enable_contact = true;
+    //static const int num_max_cost_sources = std::numeric_limits<int>::max();
+    static const bool enable_cost = true;
+    static const bool use_approximate_cost = true;
+    fcl::CollisionRequest<double> collisionRequest_intersect(
+      num_max_contacts, enable_contact, enable_cost, use_approximate_cost);
+    fcl::CollisionResult<double> collisionResult_intersect[6];
+    fcl::Transform3d init;
+    fcl::Transform3d fcl_transform;
     init.setIdentity();
-    fcl::Transform3f fcl_transform;
-    fcl::CollisionResult collisionResult_intersect[6];
-    
+        
     double totalCost = 0;
     if (mode == 1) {
       for (int j = 4; j < 6; j++) {
         Eigen::Isometry3d cur_transform = gripper_transform * gripper_model_.small_t[j];            
         eigen2Fcl(cur_transform, fcl_transform);
+        //fcl::Transform3d fcl_transform = cur_transform.cast<double>();
+        //CollisionObjectd* mesh = new CollisionObjectd(mesh_model_.get(), fcl_transform);
+        //CollisionObjectd* smallBox = new CollisionObjectd(
+          //gripper_model_.small_box[j].get(), fcl_transform);
         fcl::collide(mesh_model_.get(), init,
                      gripper_model_.small_box[j].get(), fcl_transform,
                      collisionRequest_intersect, collisionResult_intersect[j]);
@@ -397,8 +414,8 @@ public:
         if (collisionResult_intersect[j].isCollision() != true){
           return 0;
         } else {        
-          std::vector <fcl::Contact> contacts_;
-          std::vector <fcl::CostSource> cost_sources_ ;              
+          std::vector <fcl::Contact<double>> contacts_;
+          std::vector <fcl::CostSource<double>> cost_sources_ ;              
           //collisionResult_intersect[j].getContacts(contacts_);
           collisionResult_intersect[j].getCostSources(cost_sources_);
           //contactsVec_.push_back(contacts_);
@@ -413,6 +430,8 @@ public:
     if (mode == 2) {
       for (int j = 0; j < 4; j++) {
         Eigen::Isometry3d cur_transform = gripper_transform * gripper_model_.small_t[j];    
+        //fcl::Transform3d fcl_transform = cur_transform.cast<double>();
+        //fcl::Transform3d fcl_transform = fcl::Transform3d::Identity();
         eigen2Fcl(cur_transform, fcl_transform);
         fcl::collide(mesh_model_.get(), init,
                      gripper_model_.small_box[j].get(), fcl_transform,
@@ -421,8 +440,8 @@ public:
         if (collisionResult_intersect[j].isCollision() != true){
           return 0;
         } else {                  
-          std::vector <fcl::Contact> contacts_;
-          std::vector <fcl::CostSource> cost_sources_ ;              
+          std::vector <fcl::Contact<double>> contacts_;
+          std::vector <fcl::CostSource<double>> cost_sources_ ;              
           //collisionResult_intersect[j].getContacts(contacts_);
           collisionResult_intersect[j].getCostSources(cost_sources_);
           //contactsVec_.push_back(contacts_);
