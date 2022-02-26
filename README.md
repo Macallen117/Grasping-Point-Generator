@@ -30,8 +30,12 @@ git clone https://gitlab.ipr.kit.edu/uvxgo/planning-grasps-for-assembly-task.git
 cd ~/Project
 catkin_make
 
-rosrun pgfat pgfat model 
+// make sure you have sourced your workspace's setup.sh file after calling catkin_make but before trying to use your applications.
+// for example
+source /path/to/your/Project/devel/setup.bash
 
+// and then you can run this application
+rosrun pgfat pgfat model 
 // for example. the object name is Lager.stl in Motor_part folder
 rosrun pgfat pgfat Lager  
 ```

@@ -96,34 +96,27 @@ Eigen::Vector3d orthogonalVector3d(
 
 
 Eigen::Vector3d getOrthogonalVector(
-  const Eigen::Vector3d& n) {
-  Eigen::Vector3d v;
-
-  int max_index = 0;
-  int new_index[3];
+  const Eigen::Vector3d& n) { 
   double max = 0;
+  int index = 0; 
+  
   for (int i = 0; i < 3; i++) {
     if (abs(n(i)) > max) {
       max = abs(n(i));
-      max_index = i;
+      index = i;
+    }
+  }
+  Eigen::Vector3d v; 
+  double temp = 0;  
+  for (int i = 0; i < 3; i++) {
+    v(i) = 1;
+    temp += n(i);
+    if(i == index) {
+      v(i) = -temp / n(i);
     }
   }
 
-  int loc = 0;
-  new_index[2] = max_index;
-  for (int i = 0; i < 3; i++) {
-    if (i == max_index)
-      continue;
-    new_index[loc] = i;
-    loc++;
-  }
-
-  v(new_index[0]) = 1;
-  v(new_index[1]) = 1;
-  v(new_index[2]) = -(n(new_index[0])+n(new_index[1])) / n(new_index[2]);
-
   v = v.normalized();
-
   return v;
 }
 
